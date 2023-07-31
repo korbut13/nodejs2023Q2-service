@@ -13,7 +13,7 @@ export class AlbumService {
     return this.db;
   }
 
-  getById(id: string) {
+  async getById(id: string) {
     const foundAlbum: AlbumDto = this.db.find(album => album.id === id);
 
     if (foundAlbum !== undefined) {

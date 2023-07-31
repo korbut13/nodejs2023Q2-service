@@ -13,7 +13,7 @@ export class TrackService {
     return this.db;
   }
 
-  getById(id: string) {
+  async getById(id: string) {
     const foundTrack: TrackDto = this.db.find(track => track.id === id);
 
     if (foundTrack !== undefined) {
@@ -44,7 +44,7 @@ export class TrackService {
     }
   }
 
-  update(id: string, updateTrackDto: CreateTrackDto) {
+  async update(id: string, updateTrackDto: CreateTrackDto) {
 
     const trackForUpdate = this.db.find(track => track.id === id);
 

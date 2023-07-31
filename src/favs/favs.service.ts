@@ -26,13 +26,13 @@ export class FavsService {
     return albumToFavs;
   }
 
-  addArtistToFavs(artistToFavs: ArtistDto) {
+  async addArtistToFavs(artistToFavs: ArtistDto) {
     this.db.artists.push(artistToFavs);
     return artistToFavs;
   }
 
 
-  deleteTrack(id: string) {
+  async deleteTrack(id: string) {
     const track = this.db.tracks.find(track => track.id === id);
     if (track) {
       this.db.tracks = this.db.tracks.filter(track => track.id !== id);

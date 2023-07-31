@@ -24,20 +24,43 @@ export class FavsController {
 
   @Post('/track/:id')
   async addTrackToFavs(@Body() trackToFavs: any, @Param(ValidationPipe) { id }: TrackIdDto) {
-    const foundTrack = await this.trackService.getById(id);
-    return this.favsService.addTrackToFavs({ ...trackToFavs, ...foundTrack });
+    try {
+      const foundTrack = await this.trackService.getById(id);
+      return this.favsService.addTrackToFavs({ ...trackToFavs, ...foundTrack });
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        error: 'The track with this id was not found',
+      }, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   @Post('/album/:id')
   async addAlbumToFavs(@Body() albumToFavs: any, @Param(ValidationPipe) { id }: TrackIdDto) {
-    const foundAlbum = await this.albumService.getById(id);
-    return this.favsService.addAlbumToFavs({ ...albumToFavs, ...foundAlbum });
+    try {
+      const foundAlbum = await this.albumService.getById(id);
+      return this.favsService.addAlbumToFavs({ ...albumToFavs, ...foundAlbum });
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        error: 'The track with this id was not found',
+      }, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   @Post('/artist/:id')
   async addArtistToFavs(@Body() artistToFavs: any, @Param(ValidationPipe) { id }: TrackIdDto) {
-    const foundArtist = await this.artistService.getById(id);
-    return this.favsService.addArtistToFavs({ ...artistToFavs, ...foundArtist });
+    try {
+      console.log("Сразу")
+      const foundArtist = await this.artistService.getById(id);
+      console.log("зашли сюда")
+      return await this.favsService.addArtistToFavs({ ...artistToFavs, ...foundArtist })
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        error: 'The track with this id was not found',
+      }, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   @Delete('/track/:id')
@@ -65,7 +88,7 @@ export class FavsController {
       }, HttpStatus.NOT_FOUND);
     }
   }
-  @Delete('/track/:id')
+  @Delete('/artist/:id')
   @HttpCode(204)
   deleteArtist(@Param(ValidationPipe) { id }: TrackIdDto) {
     try {

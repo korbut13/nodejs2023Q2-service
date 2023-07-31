@@ -14,17 +14,19 @@ export class ArtistService {
   }
 
   async getById(id: string) {
-    const foundArtist: ArtistDto = await this.db.find(artist => artist.id === id);
 
-    try {
-      if (foundArtist !== undefined) {
-        return foundArtist;
-      } else {
-        throw new Error('The artist with this id was not found');
-      }
-    } catch (error) {
-      console.log("Вот ошибка", error)
+    console.log("Метод в artist,getById", id);
+
+    const foundArtist = this.db.find(artist => artist.id === id);
+    console.log("FoundArtist", foundArtist, 5555, id, 5555, foundArtist.id)
+
+    if (foundArtist) {
+      return foundArtist;
+    } else {
+      console.log("зашли сюда, НЕ найден")
+      throw new Error('The artist with this id was not found');
     }
+
   }
 
   create(artistDto: CreateArtistDto) {

@@ -2,10 +2,19 @@ import { Body, Controller, Get, Param, Post, Delete, Put, HttpException, HttpSta
 import { AlbumService } from './album.service';
 import { AlbumIdDto } from './dto/album-id.dto';
 import { CreateAlbumDto } from './dto/create-album.dto';
+import { dataBase } from '../dataBase';
+import { TrackService } from '../track/track.service';
+import { FavsService } from '../favs/favs.service';
 
 @Controller('album')
 export class AlbumController {
-  constructor(private readonly albumService: AlbumService) {
+
+  dbTracks = dataBase.track;
+  dbFavs = dataBase.favs;
+
+  constructor(private readonly albumService: AlbumService,
+    private readonly trackService: TrackService,
+    private readonly favsService: FavsService) {
   }
 
   @Get()
@@ -14,9 +23,9 @@ export class AlbumController {
   }
 
   @Get(':id')
-  getById(@Param(ValidationPipe) { id }: AlbumIdDto) {
+  async getById(@Param(ValidationPipe) { id }: AlbumIdDto) {
     try {
-      return this.albumService.getById(id);
+      return await this.albumService.getById(id);
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.NOT_FOUND,
@@ -32,9 +41,25 @@ export class AlbumController {
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param(ValidationPipe) { id }: AlbumIdDto) {
+  async delete(@Param(ValidationPipe) { id }: AlbumIdDto) {
     try {
-      this.albumService.delete(id)
+      this.albumService.delete(id);
+
+      const tracksFromAlbum = this.dbTracks.filter(track => track.albumId === id);
+      const favoriteAlbum = this.dbFavs.albums.find(album => album.id === id);
+
+      if (tracksFromAlbum.length > 0) {
+        tracksFromAlbum.forEach((track) => {
+          this.trackService.update(track.id, { name: track.name, artistId: track.artistId, albumId: null, duration: track.duration })
+        })
+      }
+
+      if (favoriteAlbum) {
+        await this.favsService.deleteAlbum(favoriteAlbum.id);
+      }
+
+
+
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.NOT_FOUND,
