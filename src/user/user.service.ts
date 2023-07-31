@@ -6,7 +6,6 @@ import { v4 } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Injectable()
-
 export class UserService {
   dataBase = dataBase.user;
 
@@ -15,7 +14,7 @@ export class UserService {
   }
 
   getById(id: string) {
-    const foundUser: UserDto = this.dataBase.find(user => user.id === id);
+    const foundUser: UserDto = this.dataBase.find((user) => user.id === id);
 
     if (foundUser !== undefined) {
       const respUser = { ...foundUser };
@@ -48,23 +47,22 @@ export class UserService {
       version: newUser.version,
       createdAt: newUser.createdAt,
       updatedAt: newUser.updatedAt,
-    }
+    };
 
     return respNewUser;
   }
 
   delete(id: string) {
-    const userForDelete = this.dataBase.find(user => user.id === id);
+    const userForDelete = this.dataBase.find((user) => user.id === id);
     if (userForDelete) {
-      this.dataBase = this.dataBase.filter(user => user.id !== id);
+      this.dataBase = this.dataBase.filter((user) => user.id !== id);
     } else {
-      throw new Error('The user with this id was not found')
+      throw new Error('The user with this id was not found');
     }
   }
 
   update(id: string, updateUserDto: UpdatePasswordDto) {
-
-    const userForUpdate = this.dataBase.find(user => user.id === id);
+    const userForUpdate = this.dataBase.find((user) => user.id === id);
 
     if (userForUpdate !== undefined) {
       if (userForUpdate.password !== updateUserDto.oldPassword) {
@@ -80,7 +78,7 @@ export class UserService {
         return resp;
       }
     } else {
-      throw new Error('The user with this id was not found')
+      throw new Error('The user with this id was not found');
     }
   }
 }

@@ -5,11 +5,8 @@ import { TrackService } from '../track/track.service';
 import { AlbumService } from '../album/album.service';
 import { ArtistService } from '../artist/artist.service';
 
-
 @Module({
   providers: [FavsService, TrackService, AlbumService, ArtistService],
-  controllers: [FavsController]
+  controllers: [FavsController],
 })
-export class FavsModule {
-
-}
+export class FavsModule {}

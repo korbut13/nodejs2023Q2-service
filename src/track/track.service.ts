@@ -5,15 +5,15 @@ import { TrackDto } from './dto/track.dto';
 import { CreateTrackDto } from './dto/create-track.dto';
 
 @Injectable()
-
 export class TrackService {
-
   getAll() {
     return dataBase.track;
   }
 
   getById(id: string) {
-    const foundTrack: TrackDto = dataBase.track.find(track => track.id === id);
+    const foundTrack: TrackDto = dataBase.track.find(
+      (track) => track.id === id,
+    );
 
     if (foundTrack !== undefined) {
       return foundTrack;
@@ -35,17 +35,16 @@ export class TrackService {
   }
 
   delete(id: string) {
-    const track = dataBase.track.find(track => track.id === id);
+    const track = dataBase.track.find((track) => track.id === id);
     if (track) {
-      dataBase.track = dataBase.track.filter(track => track.id !== id);
+      dataBase.track = dataBase.track.filter((track) => track.id !== id);
     } else {
-      throw new Error('The track with this id was not found')
+      throw new Error('The track with this id was not found');
     }
   }
 
   async update(id: string, updateTrackDto: CreateTrackDto) {
-
-    const trackForUpdate = dataBase.track.find(track => track.id === id);
+    const trackForUpdate = dataBase.track.find((track) => track.id === id);
 
     if (trackForUpdate !== undefined) {
       trackForUpdate.name = updateTrackDto.name;
@@ -53,10 +52,9 @@ export class TrackService {
       trackForUpdate.albumId = updateTrackDto.albumId;
       trackForUpdate.duration = updateTrackDto.duration;
 
-
       return trackForUpdate;
     } else {
-      throw new Error('The track with this id was not found')
+      throw new Error('The track with this id was not found');
     }
   }
 }
