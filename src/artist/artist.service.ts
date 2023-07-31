@@ -13,13 +13,17 @@ export class ArtistService {
     return this.db;
   }
 
-  getById(id: string) {
-    const foundArtist: ArtistDto = this.db.find(artist => artist.id === id);
+  async getById(id: string) {
+    const foundArtist: ArtistDto = await this.db.find(artist => artist.id === id);
 
-    if (foundArtist !== undefined) {
-      return foundArtist;
-    } else {
-      throw new Error('The artist with this id was not found');
+    try {
+      if (foundArtist !== undefined) {
+        return foundArtist;
+      } else {
+        throw new Error('The artist with this id was not found');
+      }
+    } catch (error) {
+      console.log("Вот ошибка", error)
     }
   }
 
