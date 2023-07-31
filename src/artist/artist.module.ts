@@ -9,4 +9,5 @@ import { ArtistController } from './artist.controller';
 })
 export class ArtistModule {
 
+
 }
