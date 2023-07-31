@@ -1,7 +1,5 @@
 import { Body, Controller, Get, Param, Post, Delete, Put, HttpException, HttpStatus, HttpCode, ValidationPipe } from '@nestjs/common';
 import { FavsService } from './favs.service';
-import { TrackDto } from '../track/dto/track.dto';
-import { CreateTrackDto } from '../track/dto/create-track.dto';
 import { TrackIdDto } from '../track/dto/track-id.dto';
 
 import { TrackService } from '../track/track.service';
@@ -18,14 +16,37 @@ export class FavsController {
   }
 
   @Get()
-  async getAll() {
-    return this.favsService.getAll();
+  getAll() {
+    const favIds = this.favsService.getAll();
+    const resp = {
+      artists: [],
+      albums: [],
+      tracks: [],
+    };
+
+    favIds.artists.forEach(artistId => {
+      const artist = this.artistService.getById(artistId);
+      resp.artists.push(artist);
+    });
+
+    favIds.albums.forEach(albumId => {
+      const album = this.albumService.getById(albumId);
+      resp.albums.push(album);
+    });
+
+    favIds.tracks.forEach(trackId => {
+      const track = this.trackService.getById(trackId);
+      resp.tracks.push(track);
+    });
+
+    return resp;
+
   }
 
   @Post('/track/:id')
-  async addTrackToFavs(@Body() trackToFavs: any, @Param(ValidationPipe) { id }: TrackIdDto) {
+  async tracks(@Body() trackToFavs: any, @Param(ValidationPipe) { id }: TrackIdDto) {
     try {
-      const foundTrack = await this.trackService.getById(id);
+      const foundTrack = this.trackService.getById(id);
       return this.favsService.addTrackToFavs({ ...trackToFavs, ...foundTrack });
     } catch (error) {
       throw new HttpException({
@@ -38,23 +59,24 @@ export class FavsController {
   @Post('/album/:id')
   async addAlbumToFavs(@Body() albumToFavs: any, @Param(ValidationPipe) { id }: TrackIdDto) {
     try {
-      const foundAlbum = await this.albumService.getById(id);
+      const foundAlbum = this.albumService.getById(id);
       return this.favsService.addAlbumToFavs({ ...albumToFavs, ...foundAlbum });
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
         error: 'The track with this id was not found',
-      }, HttpStatus.UNPROCESSABLE_ENTITY);
+      }, HttpStatus.UNPROCESSABLE_ENTITY)
     }
   }
 
   @Post('/artist/:id')
-  async addArtistToFavs(@Body() artistToFavs: any, @Param(ValidationPipe) { id }: TrackIdDto) {
+  addArtistToFavs(@Body() artistToFavs: any, @Param(ValidationPipe) { id }: TrackIdDto) {
     try {
-      console.log("Сразу")
-      const foundArtist = await this.artistService.getById(id);
-      console.log("зашли сюда")
-      return await this.favsService.addArtistToFavs({ ...artistToFavs, ...foundArtist })
+      const foundArtist = this.artistService.getById(id);
+      if (foundArtist) {
+        return this.favsService.addArtistToFavs({ ...artistToFavs, ...foundArtist });
+      }
+
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -100,5 +122,4 @@ export class FavsController {
       }, HttpStatus.NOT_FOUND);
     }
   }
-
 }

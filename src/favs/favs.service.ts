@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { dataBase } from '../dataBase';
-import { v4 } from 'uuid';
-import { FavsDto } from './dto/favs.dto';
-import { CreateTrackDto } from '../track/dto/create-track.dto';
 import { TrackDto } from '../track/dto/track.dto';
 import { AlbumDto } from '../album/dto/album.dto';
 import { ArtistDto } from '../artist/dto/artist.dto';
@@ -10,50 +7,48 @@ import { ArtistDto } from '../artist/dto/artist.dto';
 @Injectable()
 
 export class FavsService {
-  db = dataBase.favs;
 
   getAll() {
-    return this.db;
+    return dataBase.favs;
   }
 
   addTrackToFavs(trackToFavs: TrackDto) {
-    this.db.tracks.push(trackToFavs);
+    dataBase.favs.tracks.push(trackToFavs.id);
     return trackToFavs;
   }
 
   addAlbumToFavs(albumToFavs: AlbumDto) {
-    this.db.albums.push(albumToFavs);
+    dataBase.favs.albums.push(albumToFavs.id);
     return albumToFavs;
   }
 
-  async addArtistToFavs(artistToFavs: ArtistDto) {
-    this.db.artists.push(artistToFavs);
-    return artistToFavs;
+  addArtistToFavs(artistToFavs: ArtistDto) {
+    dataBase.favs.artists.push(artistToFavs.id);
+    return { id: artistToFavs.id };
   }
 
-
   async deleteTrack(id: string) {
-    const track = this.db.tracks.find(track => track.id === id);
-    if (track) {
-      this.db.tracks = this.db.tracks.filter(track => track.id !== id);
+    const trackId = dataBase.favs.tracks.find(trackId => trackId === id);
+    if (trackId) {
+      dataBase.favs.tracks = dataBase.favs.tracks.filter(trackId => trackId !== id);
     } else {
       throw new Error('The track with this id was not found')
     }
   }
 
   deleteAlbum(id: string) {
-    const album = this.db.albums.find(album => album.id === id);
+    const album = dataBase.favs.albums.find(album => album === id);
     if (album) {
-      this.db.albums = this.db.albums.filter(album => album.id !== id);
+      dataBase.favs.albums = dataBase.favs.albums.filter(album => album !== id);
     } else {
       throw new Error('The album with this id was not found')
     }
   }
 
   deleteArtist(id: string) {
-    const artist = this.db.artists.find(artist => artist.id === id);
+    const artist = dataBase.favs.artists.find(artist => artist === id);
     if (artist) {
-      this.db.artists = this.db.artists.filter(artist => artist.id !== id);
+      dataBase.favs.artists = dataBase.favs.artists.filter(artist => artist !== id);
     } else {
       throw new Error('The artist with this id was not found')
     }

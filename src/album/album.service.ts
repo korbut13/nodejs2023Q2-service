@@ -7,14 +7,13 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 @Injectable()
 
 export class AlbumService {
-  db = dataBase.album;
 
   getAll() {
-    return this.db;
+    return dataBase.album;
   }
 
-  async getById(id: string) {
-    const foundAlbum: AlbumDto = this.db.find(album => album.id === id);
+  getById(id: string) {
+    const foundAlbum: AlbumDto = dataBase.album.find(album => album.id === id);
 
     if (foundAlbum !== undefined) {
       return foundAlbum;
@@ -31,14 +30,14 @@ export class AlbumService {
       id: idAlbum,
     };
 
-    this.db.push(newAlbum);
-    return this.db[this.db.length - 1];
+    dataBase.album.push(newAlbum);
+    return dataBase.album[dataBase.album.length - 1];
   }
 
   delete(id: string) {
-    const album = this.db.find(album => album.id === id);
+    const album = dataBase.album.find(album => album.id === id);
     if (album) {
-      this.db = this.db.filter(album => album.id !== id);
+      dataBase.album = dataBase.album.filter(album => album.id !== id);
     } else {
       throw new Error('The album with this id was not found')
     }
@@ -46,7 +45,7 @@ export class AlbumService {
 
   update(id: string, updateAlbumDto: CreateAlbumDto) {
 
-    const albumForUpdate = this.db.find(album => album.id === id);
+    const albumForUpdate = dataBase.album.find(album => album.id === id);
 
     if (albumForUpdate !== undefined) {
       albumForUpdate.name = updateAlbumDto.name;

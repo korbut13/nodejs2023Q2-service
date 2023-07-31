@@ -1,32 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { dataBase } from '../dataBase';
-import { ArtistDto } from './dto/artist.dto';
 import { v4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
 
 @Injectable()
 
 export class ArtistService {
-  db = dataBase.artist;
 
   getAll() {
-    return this.db;
+    return dataBase.artist;
   }
 
-  async getById(id: string) {
-
-    console.log("Метод в artist,getById", id);
-
-    const foundArtist = this.db.find(artist => artist.id === id);
-    console.log("FoundArtist", foundArtist, 5555, id, 5555, foundArtist.id)
+  getById(id: string) {
+    const foundArtist = dataBase.artist.find(artist => artist.id === id);
 
     if (foundArtist) {
       return foundArtist;
     } else {
-      console.log("зашли сюда, НЕ найден")
       throw new Error('The artist with this id was not found');
     }
-
   }
 
   create(artistDto: CreateArtistDto) {
@@ -37,14 +29,16 @@ export class ArtistService {
       id: idArtist,
     };
 
-    this.db.push(newArtist);
-    return this.db[this.db.length - 1];
+    dataBase.artist.push(newArtist);
+    return dataBase.artist[dataBase.artist.length - 1];
   }
 
   delete(id: string) {
-    const artistForDelete = this.db.find(artist => artist.id === id);
+    const artistForDelete = dataBase.artist.find(artist => artist.id === id);
     if (artistForDelete) {
-      this.db = this.db.filter(artist => artist.id !== id);
+      dataBase.artist = dataBase.artist.filter(artist => artist.id !== id);
+      return null;
+
     } else {
       throw new Error('The artist with this id was not found')
     }
@@ -52,7 +46,7 @@ export class ArtistService {
 
   update(id: string, updateArtistDto: CreateArtistDto) {
 
-    const artistForUpdate = this.db.find(artist => artist.id === id);
+    const artistForUpdate = dataBase.artist.find(artist => artist.id === id);
 
     if (artistForUpdate !== undefined) {
       artistForUpdate.name = updateArtistDto.name;

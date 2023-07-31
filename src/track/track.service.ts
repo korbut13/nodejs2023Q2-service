@@ -7,14 +7,13 @@ import { CreateTrackDto } from './dto/create-track.dto';
 @Injectable()
 
 export class TrackService {
-  db = dataBase.track;
 
   getAll() {
-    return this.db;
+    return dataBase.track;
   }
 
-  async getById(id: string) {
-    const foundTrack: TrackDto = this.db.find(track => track.id === id);
+  getById(id: string) {
+    const foundTrack: TrackDto = dataBase.track.find(track => track.id === id);
 
     if (foundTrack !== undefined) {
       return foundTrack;
@@ -31,14 +30,14 @@ export class TrackService {
       id: idTrack,
     };
 
-    this.db.push(newTrack);
-    return this.db[this.db.length - 1];
+    dataBase.track.push(newTrack);
+    return dataBase.track[dataBase.track.length - 1];
   }
 
   delete(id: string) {
-    const track = this.db.find(track => track.id === id);
+    const track = dataBase.track.find(track => track.id === id);
     if (track) {
-      this.db = this.db.filter(track => track.id !== id);
+      dataBase.track = dataBase.track.filter(track => track.id !== id);
     } else {
       throw new Error('The track with this id was not found')
     }
@@ -46,7 +45,7 @@ export class TrackService {
 
   async update(id: string, updateTrackDto: CreateTrackDto) {
 
-    const trackForUpdate = this.db.find(track => track.id === id);
+    const trackForUpdate = dataBase.track.find(track => track.id === id);
 
     if (trackForUpdate !== undefined) {
       trackForUpdate.name = updateTrackDto.name;

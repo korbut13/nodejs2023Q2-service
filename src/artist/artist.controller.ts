@@ -9,9 +9,6 @@ import { FavsService } from '../favs/favs.service';
 
 @Controller('artist')
 export class ArtistController {
-  dbAlbums = dataBase.album;
-  dbTracks = dataBase.track;
-  dbFavs = dataBase.favs;
 
   constructor(private readonly artistService: ArtistService,
     private readonly trackService: TrackService,
@@ -28,7 +25,7 @@ export class ArtistController {
   @Get(':id')
   async getById(@Param(ValidationPipe) artistId: ArtistIdDto) {
     try {
-      return await this.artistService.getById(artistId.id);
+      return this.artistService.getById(artistId.id);
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.NOT_FOUND,
@@ -44,13 +41,13 @@ export class ArtistController {
 
   @Delete(':id')
   @HttpCode(204)
-  async delete(@Param(ValidationPipe) artistId: ArtistIdDto) {
+  delete(@Param(ValidationPipe) artistId: ArtistIdDto) {
     try {
       this.artistService.delete(artistId.id);
 
-      const tracksThisArtist = this.dbTracks.filter(track => track.artistId === artistId.id);
-      const albumsThisArtist = this.dbAlbums.filter(album => album.artistId === artistId.id);
-      const favoriteArtist = this.dbFavs.artists.find(artist => artist.id === artistId.id);
+      const tracksThisArtist = dataBase.track.filter(track => track.artistId === artistId.id);
+      const albumsThisArtist = dataBase.album.filter(album => album.artistId === artistId.id);
+      const favoriteArtist = dataBase.favs.artists.find(artist => artist === artistId.id);
 
       if (tracksThisArtist.length > 0) {
         tracksThisArtist.forEach(async (track) => {
@@ -60,13 +57,13 @@ export class ArtistController {
 
       if (albumsThisArtist.length > 0) {
         albumsThisArtist.forEach(async (album) => {
-          await this.albumService.update(album.id, { name: album.name, year: album.year, artistId: null })
+          this.albumService.update(album.id, { name: album.name, year: album.year, artistId: null })
         })
       }
 
       if (favoriteArtist) {
-        const idArtist = favoriteArtist.id;
-        await this.favsService.deleteArtist(idArtist);
+        const idArtist = favoriteArtist;
+        this.favsService.deleteArtist(idArtist);
       }
 
     } catch (error) {

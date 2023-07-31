@@ -9,9 +9,6 @@ import { FavsService } from '../favs/favs.service';
 @Controller('album')
 export class AlbumController {
 
-  dbTracks = dataBase.track;
-  dbFavs = dataBase.favs;
-
   constructor(private readonly albumService: AlbumService,
     private readonly trackService: TrackService,
     private readonly favsService: FavsService) {
@@ -25,7 +22,7 @@ export class AlbumController {
   @Get(':id')
   async getById(@Param(ValidationPipe) { id }: AlbumIdDto) {
     try {
-      return await this.albumService.getById(id);
+      return this.albumService.getById(id);
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.NOT_FOUND,
@@ -45,8 +42,8 @@ export class AlbumController {
     try {
       this.albumService.delete(id);
 
-      const tracksFromAlbum = this.dbTracks.filter(track => track.albumId === id);
-      const favoriteAlbum = this.dbFavs.albums.find(album => album.id === id);
+      const tracksFromAlbum = dataBase.track.filter(track => track.albumId === id);
+      const favoriteAlbum = dataBase.favs.albums.find(album => album === id);
 
       if (tracksFromAlbum.length > 0) {
         tracksFromAlbum.forEach((track) => {
@@ -55,7 +52,7 @@ export class AlbumController {
       }
 
       if (favoriteAlbum) {
-        await this.favsService.deleteAlbum(favoriteAlbum.id);
+        await this.favsService.deleteAlbum(favoriteAlbum);
       }
 
 

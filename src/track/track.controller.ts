@@ -8,8 +8,6 @@ import { FavsService } from '../favs/favs.service';
 @Controller('track')
 export class TrackController {
 
-  dbFavs = dataBase.favs;
-
   constructor(private readonly trackService: TrackService,
     private readonly favsService: FavsService) {
   }
@@ -21,7 +19,7 @@ export class TrackController {
   @Get(':id')
   async getById(@Param(ValidationPipe) { id }: TrackIdDto) {
     try {
-      return await this.trackService.getById(id);
+      return this.trackService.getById(id);
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.NOT_FOUND,
@@ -40,10 +38,10 @@ export class TrackController {
   async delete(@Param(ValidationPipe) { id }: TrackIdDto) {
     try {
       this.trackService.delete(id);
-      const favoriteTrack = this.dbFavs.tracks.find(track => track.id === id);
+      const favoriteTrack = dataBase.favs.tracks.find(track => track === id);
 
       if (favoriteTrack) {
-        await this.favsService.deleteTrack(favoriteTrack.id);
+        await this.favsService.deleteTrack(favoriteTrack);
       }
 
 
