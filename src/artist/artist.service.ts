@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { db } from './dbArtists';
+import { dataBase } from '../dataBase';
 import { ArtistDto } from './dto/artist.dto';
 import { v4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -7,7 +7,7 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 @Injectable()
 
 export class ArtistService {
-  db = db;
+  db = dataBase.artist;
 
   getAll() {
     return this.db;

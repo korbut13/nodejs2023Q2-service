@@ -8,7 +8,7 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 @Injectable()
 
 export class UserService {
-  dataBase = dataBase;
+  dataBase = dataBase.user;
 
   getAll() {
     return this.dataBase;
