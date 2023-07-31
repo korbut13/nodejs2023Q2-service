@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Delete, Put, HttpException, HttpStatus, ValidationPipe, HttpCode } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserService } from './user.service';
 import { UserIdDto } from './dto/userId.dto';
 
@@ -46,10 +46,11 @@ export class UserController {
   }
 
   @Put(':id')
-  update(@Body(ValidationPipe) updateUserDto: UpdateUserDto, @Param(ValidationPipe) userIdDto: UserIdDto) {
+  update(@Body(ValidationPipe) updateUserDto: UpdatePasswordDto, @Param(ValidationPipe) userIdDto: UserIdDto) {
 
     try {
-      return this.userService.update(userIdDto.id, updateUserDto)
+      return this.userService.update(userIdDto.id, updateUserDto);
+
     } catch (error) {
       if (error.message === 'The user with this id was not found') {
         throw new HttpException({
@@ -62,7 +63,5 @@ export class UserController {
           error: 'OldPassword is wrong',
         }, HttpStatus.FORBIDDEN);
     }
-
   }
-
 }

@@ -3,7 +3,7 @@ import { dataBase } from '../dataBase';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
 import { v4 } from 'uuid';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Injectable()
 
@@ -62,26 +62,25 @@ export class UserService {
     }
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    const userForUpdate = this.dataBase.find(user => user.id === id);
-    console.log("user for update", userForUpdate, 5555, updateUserDto.oldPassword, 5555, userForUpdate.password === updateUserDto.oldPassword, 5555, updateUserDto);
+  update(id: string, updateUserDto: UpdatePasswordDto) {
 
-    if (userForUpdate) {
+    const userForUpdate = this.dataBase.find(user => user.id === id);
+
+    if (userForUpdate !== undefined) {
       if (userForUpdate.password !== updateUserDto.oldPassword) {
         throw new Error('OldPassword is wrong');
       } else {
-        this.dataBase = this.dataBase.map(user => user.id === id ?
-          {
-            ...user,
-            password: user.login,
-            version: user.version + 1,
-            updatedAt: Date.now(),
-          } : user);
-      }
+        userForUpdate.password = updateUserDto.newPassword;
+        userForUpdate.version = userForUpdate.version + 1;
+        userForUpdate.updatedAt = Date.now();
 
+        const resp = { ...userForUpdate };
+        delete resp.password;
+
+        return resp;
+      }
     } else {
       throw new Error('The user with this id was not found')
     }
-
   }
 }
