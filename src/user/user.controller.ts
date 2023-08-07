@@ -18,16 +18,16 @@ import { UserIdDto } from './dto/userId.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
   @Get()
   async getAll() {
-    return this.userService.getAll();
+    return await this.userService.getAll();
   }
 
   @Get(':id')
-  getById(@Param(ValidationPipe) userIdDto: UserIdDto) {
+  async getById(@Param(ValidationPipe) userIdDto: UserIdDto) {
     try {
-      return this.userService.getById(userIdDto.id);
+      return await this.userService.getById(userIdDto.id)
     } catch (error) {
       throw new HttpException(
         {
@@ -40,15 +40,15 @@ export class UserController {
   }
 
   @Post()
-  create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
+    return await this.userService.create(createUserDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param(ValidationPipe) userIdDto: UserIdDto) {
+  async delete(@Param(ValidationPipe) userIdDto: UserIdDto) {
     try {
-      this.userService.delete(userIdDto.id);
+      await this.userService.delete(userIdDto.id);
     } catch (error) {
       throw new HttpException(
         {
@@ -61,12 +61,12 @@ export class UserController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Body(ValidationPipe) updateUserDto: UpdatePasswordDto,
     @Param(ValidationPipe) userIdDto: UserIdDto,
   ) {
     try {
-      return this.userService.update(userIdDto.id, updateUserDto);
+      return await this.userService.update(userIdDto.id, updateUserDto);
     } catch (error) {
       if (error.message === 'The user with this id was not found') {
         throw new HttpException(
