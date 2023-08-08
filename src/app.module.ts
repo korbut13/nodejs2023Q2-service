@@ -8,6 +8,9 @@ import { FavsModule } from './favs/favs.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/user.entity';
+import { Artist } from './artist/artist.entity';
+import { Track } from './track/track.entity';
+import { Album } from './album/album.entity';
 
 @Module({
   imports: [
@@ -21,7 +24,7 @@ import { User } from './user/user.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User],
+      entities: [User, Artist, Track, Album],
       synchronize: true,
     }),
     UserModule, ArtistModule, AlbumModule, TrackModule, FavsModule,

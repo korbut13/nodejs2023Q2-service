@@ -1,59 +1,52 @@
 import { Injectable } from '@nestjs/common';
-import { dataBase } from '../dataBase';
-import { v4 } from 'uuid';
-import { AlbumDto } from './dto/album.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateAlbumDto } from './dto/create-album.dto';
+import { Album } from './album.entity';
+import { TrackService } from '../track/track.service';
+
 
 @Injectable()
 export class AlbumService {
-  getAll() {
-    return dataBase.album;
+  constructor(
+    private readonly trackService: TrackService,
+    @InjectRepository(Album) private readonly albumRepository: Repository<Album>) { }
+
+  async getAll() {
+    const albums = await this.albumRepository.find();
+    return albums;
   }
 
-  getById(id: string) {
-    const foundAlbum: AlbumDto = dataBase.album.find(
-      (album) => album.id === id,
-    );
+  async getById(id: string) {
+    const foundAlbum = await this.albumRepository.findOneBy({ id: id });
+    if (!foundAlbum) throw new Error('The album with this id was not found');
+    return foundAlbum
+  }
 
-    if (foundAlbum !== undefined) {
-      return foundAlbum;
-    } else {
-      throw new Error('The album with this id was not found');
+  async getByArtistId(id: string) {
+    const albums = await this.albumRepository.find({
+      where: { artistId: id }
+    });
+    return albums;
+  }
+
+  async create(albumDto: CreateAlbumDto) {
+    const newAlbum = this.albumRepository.create(albumDto);
+    await this.albumRepository.save(newAlbum);
+    return newAlbum;
+  }
+
+  async delete(id: string) {
+    const tracks = await this.trackService.getByAlbumId(id);
+    if (tracks.length) {
+      tracks.forEach(async track => await this.trackService.update(track.id, { ...track, albumId: null }))
     }
+    const deletedAlbum = await this.albumRepository.delete(id);
+    if (!deletedAlbum.affected) throw new Error('The album with this id was not found');
   }
 
-  create(albumDto: CreateAlbumDto) {
-    const idAlbum = v4();
-
-    const newAlbum = {
-      ...albumDto,
-      id: idAlbum,
-    };
-
-    dataBase.album.push(newAlbum);
-    return dataBase.album[dataBase.album.length - 1];
-  }
-
-  delete(id: string) {
-    const album = dataBase.album.find((album) => album.id === id);
-    if (album) {
-      dataBase.album = dataBase.album.filter((album) => album.id !== id);
-    } else {
-      throw new Error('The album with this id was not found');
-    }
-  }
-
-  update(id: string, updateAlbumDto: CreateAlbumDto) {
-    const albumForUpdate = dataBase.album.find((album) => album.id === id);
-
-    if (albumForUpdate !== undefined) {
-      albumForUpdate.name = updateAlbumDto.name;
-      albumForUpdate.year = updateAlbumDto.year;
-      albumForUpdate.artistId = updateAlbumDto.artistId;
-
-      return albumForUpdate;
-    } else {
-      throw new Error('The album with this id was not found');
-    }
+  async update(id: string, updateAlbumDto: CreateAlbumDto) {
+    await this.albumRepository.update(id, updateAlbumDto);
+    return await this.getById(id);
   }
 }

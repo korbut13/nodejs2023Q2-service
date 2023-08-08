@@ -34,6 +34,14 @@ export class ArtistService {
   }
 
   async delete(id: string) {
+    const albums = await this.albumService.getByArtistId(id);
+    const tracks = await this.trackService.getByArtistId(id);
+    if (albums.length) {
+      albums.forEach(async album => await this.albumService.update(album.id, { ...album, artistId: null }))
+    }
+    if (tracks.length) {
+      tracks.forEach(async track => await this.trackService.update(track.id, { ...track, artistId: null }))
+    }
     const deletedArtist = await this.artistRepository.delete(id);
     if (!deletedArtist.affected) throw new Error('The artist with this id was not found');
     return null;

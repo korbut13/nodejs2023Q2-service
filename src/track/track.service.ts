@@ -1,60 +1,52 @@
 import { Injectable } from '@nestjs/common';
-import { dataBase } from '../dataBase';
-import { v4 } from 'uuid';
-import { TrackDto } from './dto/track.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateTrackDto } from './dto/create-track.dto';
+import { Track } from './track.entity';
 
 @Injectable()
 export class TrackService {
-  getAll() {
-    return dataBase.track;
+
+  constructor(@InjectRepository(Track) private readonly trackRepository: Repository<Track>) { }
+
+  async getAll() {
+    const tracks = await this.trackRepository.find();
+    return tracks;
   }
 
   getById(id: string) {
-    const foundTrack: TrackDto = dataBase.track.find(
-      (track) => track.id === id,
-    );
-
-    if (foundTrack !== undefined) {
-      return foundTrack;
-    } else {
-      throw new Error('The track with this id was not found');
-    }
+    const foundedTrack = this.trackRepository.findOneBy({ id: id });
+    if (!foundedTrack) throw new Error('The track with this id was not found');
+    return foundedTrack;
   }
 
-  create(trackDto: CreateTrackDto) {
-    const idTrack = v4();
-
-    const newTrack = {
-      ...trackDto,
-      id: idTrack,
-    };
-
-    dataBase.track.push(newTrack);
-    return dataBase.track[dataBase.track.length - 1];
+  async getByArtistId(id: string) {
+    const tracks = await this.trackRepository.find({
+      where: { artistId: id }
+    });
+    return tracks;
   }
 
-  delete(id: string) {
-    const track = dataBase.track.find((track) => track.id === id);
-    if (track) {
-      dataBase.track = dataBase.track.filter((track) => track.id !== id);
-    } else {
-      throw new Error('The track with this id was not found');
-    }
+  async getByAlbumId(id: string) {
+    const tracks = await this.trackRepository.find({
+      where: { albumId: id }
+    });
+    return tracks;
+  }
+
+  async create(trackDto: CreateTrackDto) {
+    const newTrack = this.trackRepository.create(trackDto);
+    await this.trackRepository.save(newTrack);
+    return newTrack;
+  }
+
+  async delete(id: string) {
+    const deletedTrack = await this.trackRepository.delete(id);
+    if (!deletedTrack.affected) throw new Error('The track with this id was not found');
   }
 
   async update(id: string, updateTrackDto: CreateTrackDto) {
-    const trackForUpdate = dataBase.track.find((track) => track.id === id);
-
-    if (trackForUpdate !== undefined) {
-      trackForUpdate.name = updateTrackDto.name;
-      trackForUpdate.artistId = updateTrackDto.artistId;
-      trackForUpdate.albumId = updateTrackDto.albumId;
-      trackForUpdate.duration = updateTrackDto.duration;
-
-      return trackForUpdate;
-    } else {
-      throw new Error('The track with this id was not found');
-    }
+    await this.trackRepository.update(id, updateTrackDto);
+    return await this.getById(id)
   }
 }

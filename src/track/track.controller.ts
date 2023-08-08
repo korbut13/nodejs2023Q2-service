@@ -22,10 +22,10 @@ export class TrackController {
   constructor(
     private readonly trackService: TrackService,
     private readonly favsService: FavsService,
-  ) {}
+  ) { }
   @Get()
   async getAll() {
-    return this.trackService.getAll();
+    return await this.trackService.getAll();
   }
 
   @Get(':id')
