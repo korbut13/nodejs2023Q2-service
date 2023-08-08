@@ -14,8 +14,8 @@ export class TrackService {
     return tracks;
   }
 
-  getById(id: string) {
-    const foundedTrack = this.trackRepository.findOneBy({ id: id });
+  async getById(id: string) {
+    const foundedTrack = await this.trackRepository.findOneBy({ id: id });
     if (!foundedTrack) throw new Error('The track with this id was not found');
     return foundedTrack;
   }

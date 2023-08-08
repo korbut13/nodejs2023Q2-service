@@ -31,7 +31,7 @@ export class TrackController {
   @Get(':id')
   async getById(@Param(ValidationPipe) { id }: TrackIdDto) {
     try {
-      return this.trackService.getById(id);
+      return await this.trackService.getById(id);
     } catch (error) {
       throw new HttpException(
         {
@@ -52,7 +52,7 @@ export class TrackController {
   @HttpCode(204)
   async delete(@Param(ValidationPipe) { id }: TrackIdDto) {
     try {
-      this.trackService.delete(id);
+      await this.trackService.delete(id);
       const favoriteTrack = dataBase.favs.tracks.find((track) => track === id);
 
       if (favoriteTrack) {
