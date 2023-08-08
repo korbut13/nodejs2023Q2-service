@@ -26,17 +26,17 @@ export class ArtistController {
     private readonly trackService: TrackService,
     private readonly albumService: AlbumService,
     private readonly favsService: FavsService,
-  ) {}
+  ) { }
 
   @Get()
   async getAll() {
-    return this.artistService.getAll();
+    return await this.artistService.getAll();
   }
 
   @Get(':id')
   async getById(@Param(ValidationPipe) artistId: ArtistIdDto) {
     try {
-      return this.artistService.getById(artistId.id);
+      return await this.artistService.getById(artistId.id);
     } catch (error) {
       throw new HttpException(
         {
@@ -49,15 +49,15 @@ export class ArtistController {
   }
 
   @Post()
-  create(@Body(ValidationPipe) createArtistDto: CreateArtistDto) {
-    return this.artistService.create(createArtistDto);
+  async create(@Body(ValidationPipe) createArtistDto: CreateArtistDto) {
+    return await this.artistService.create(createArtistDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param(ValidationPipe) artistId: ArtistIdDto) {
+  async delete(@Param(ValidationPipe) artistId: ArtistIdDto) {
     try {
-      this.artistService.delete(artistId.id);
+      await this.artistService.delete(artistId.id);
 
       const tracksThisArtist = dataBase.track.filter(
         (track) => track.artistId === artistId.id,
@@ -106,12 +106,12 @@ export class ArtistController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Body(ValidationPipe) updateArtistDto: CreateArtistDto,
     @Param(ValidationPipe) artistId: ArtistIdDto,
   ) {
     try {
-      return this.artistService.update(artistId.id, updateArtistDto);
+      return await this.artistService.update(artistId.id, updateArtistDto);
     } catch (error) {
       throw new HttpException(
         {

@@ -1,56 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { dataBase } from '../dataBase';
-import { v4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateArtistDto } from './dto/create-artist.dto';
+import { TrackService } from '../track/track.service';
+import { AlbumService } from '../album/album.service';
+import { FavsService } from '../favs/favs.service';
+import { Artist } from './artist.entity';
 
 @Injectable()
 export class ArtistService {
-  getAll() {
-    return dataBase.artist;
+
+  constructor(
+    private readonly trackService: TrackService,
+    private readonly albumService: AlbumService,
+    private readonly favsService: FavsService,
+    @InjectRepository(Artist) private readonly artistRepository: Repository<Artist>) { }
+
+  async getAll() {
+    const artists = await this.artistRepository.find();
+    return artists;
   }
 
-  getById(id: string) {
-    const foundArtist = dataBase.artist.find((artist) => artist.id === id);
-
-    if (foundArtist) {
-      return foundArtist;
-    } else {
-      throw new Error('The artist with this id was not found');
-    }
+  async getById(id: string) {
+    const foundArtist = await this.artistRepository.findOneBy({ id: id });
+    if (!foundArtist) throw new Error('The artist with this id was not found');
+    return foundArtist;
   }
 
-  create(artistDto: CreateArtistDto) {
-    const idArtist = v4();
-
-    const newArtist = {
-      ...artistDto,
-      id: idArtist,
-    };
-
-    dataBase.artist.push(newArtist);
-    return dataBase.artist[dataBase.artist.length - 1];
+  async create(artistDto: CreateArtistDto) {
+    const newArtist = this.artistRepository.create(artistDto);
+    await this.artistRepository.save(newArtist);
+    return newArtist;
   }
 
-  delete(id: string) {
-    const artistForDelete = dataBase.artist.find((artist) => artist.id === id);
-    if (artistForDelete) {
-      dataBase.artist = dataBase.artist.filter((artist) => artist.id !== id);
-      return null;
-    } else {
-      throw new Error('The artist with this id was not found');
-    }
+  async delete(id: string) {
+    const deletedArtist = await this.artistRepository.delete(id);
+    if (!deletedArtist.affected) throw new Error('The artist with this id was not found');
+    return null;
   }
 
-  update(id: string, updateArtistDto: CreateArtistDto) {
-    const artistForUpdate = dataBase.artist.find((artist) => artist.id === id);
+  async update(id: string, updateArtistDto: CreateArtistDto) {
 
-    if (artistForUpdate !== undefined) {
-      artistForUpdate.name = updateArtistDto.name;
-      artistForUpdate.grammy = updateArtistDto.grammy;
-
-      return artistForUpdate;
-    } else {
-      throw new Error('The artist with this id was not found');
-    }
+    await this.artistRepository.update(id, updateArtistDto);
+    return await this.getById(id);
   }
 }
