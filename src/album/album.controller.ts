@@ -12,10 +12,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
-import { AlbumIdDto } from './dto/album-id.dto';
+import { IdDto } from '../utils/id.dto';
 import { CreateAlbumDto } from './dto/create-album.dto';
-import { TrackService } from '../track/track.service';
-import { FavsService } from '../favs/favs.service';
 
 @Controller('album')
 export class AlbumController {
@@ -29,7 +27,7 @@ export class AlbumController {
   }
 
   @Get(':id')
-  async getById(@Param(ValidationPipe) { id }: AlbumIdDto) {
+  async getById(@Param(ValidationPipe) { id }: IdDto) {
     try {
       return await this.albumService.getById(id);
     } catch (error) {
@@ -50,7 +48,7 @@ export class AlbumController {
 
   @Delete(':id')
   @HttpCode(204)
-  async delete(@Param(ValidationPipe) { id }: AlbumIdDto) {
+  async delete(@Param(ValidationPipe) { id }: IdDto) {
     try {
       await this.albumService.delete(id);
     } catch (error) {
@@ -67,7 +65,7 @@ export class AlbumController {
   @Put(':id')
   async update(
     @Body(ValidationPipe) updateAlbumDto: CreateAlbumDto,
-    @Param(ValidationPipe) { id }: AlbumIdDto,
+    @Param(ValidationPipe) { id }: IdDto,
   ) {
     try {
       return await this.albumService.update(id, updateAlbumDto);

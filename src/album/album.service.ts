@@ -4,13 +4,15 @@ import { Repository } from 'typeorm';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { Album } from './album.entity';
 import { TrackService } from '../track/track.service';
+import { AlbumsFavs } from '../favs/albums-to-favs.entity';
 
 
 @Injectable()
 export class AlbumService {
   constructor(
     private readonly trackService: TrackService,
-    @InjectRepository(Album) private readonly albumRepository: Repository<Album>) { }
+    @InjectRepository(Album) private readonly albumRepository: Repository<Album>,
+    @InjectRepository(AlbumsFavs) private readonly albumsFavsRepository: Repository<AlbumsFavs>,) { }
 
   async getAll() {
     const albums = await this.albumRepository.find();
@@ -38,9 +40,15 @@ export class AlbumService {
 
   async delete(id: string) {
     const tracks = await this.trackService.getByAlbumId(id);
+    const favoriteAlbum = await this.albumsFavsRepository.find({ where: { albumId: id } });
+
     if (tracks.length) {
       tracks.forEach(async track => await this.trackService.update(track.id, { ...track, albumId: null }))
     }
+    if (favoriteAlbum) {
+      await this.albumsFavsRepository.delete({ albumId: id });
+    }
+
     const deletedAlbum = await this.albumRepository.delete(id);
     if (!deletedAlbum.affected) throw new Error('The album with this id was not found');
   }

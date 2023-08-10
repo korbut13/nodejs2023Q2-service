@@ -6,6 +6,7 @@ import { TrackService } from '../track/track.service';
 import { AlbumService } from '../album/album.service';
 import { FavsService } from '../favs/favs.service';
 import { Artist } from './artist.entity';
+import { ArtistsFavs } from '../favs/artists-to-favs.entity';
 
 @Injectable()
 export class ArtistService {
@@ -13,8 +14,9 @@ export class ArtistService {
   constructor(
     private readonly trackService: TrackService,
     private readonly albumService: AlbumService,
-    private readonly favsService: FavsService,
-    @InjectRepository(Artist) private readonly artistRepository: Repository<Artist>) { }
+    @InjectRepository(Artist) private readonly artistRepository: Repository<Artist>,
+    @InjectRepository(ArtistsFavs) private readonly artistsFavsRepository: Repository<ArtistsFavs>) { }
+
 
   async getAll() {
     const artists = await this.artistRepository.find();
@@ -36,11 +38,18 @@ export class ArtistService {
   async delete(id: string) {
     const albums = await this.albumService.getByArtistId(id);
     const tracks = await this.trackService.getByArtistId(id);
+    const favoriteArtist = await this.artistsFavsRepository.find({
+      where: { artistId: id }
+    })
+
     if (albums.length) {
       albums.forEach(async album => await this.albumService.update(album.id, { ...album, artistId: null }))
     }
     if (tracks.length) {
       tracks.forEach(async track => await this.trackService.update(track.id, { ...track, artistId: null }))
+    }
+    if (favoriteArtist) {
+      await this.artistsFavsRepository.delete({ artistId: id });
     }
     const deletedArtist = await this.artistRepository.delete(id);
     if (!deletedArtist.affected) throw new Error('The artist with this id was not found');
@@ -49,7 +58,7 @@ export class ArtistService {
 
   async update(id: string, updateArtistDto: CreateArtistDto) {
 
-    await this.artistRepository.update(id, updateArtistDto);
+    await this.artistRepository.update(id, updateArtistDto)
     return await this.getById(id);
   }
 }

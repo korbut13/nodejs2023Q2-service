@@ -3,11 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { Track } from './track.entity';
+import { TracksFavs } from '../favs/tracks-to-favs.entity';
 
 @Injectable()
 export class TrackService {
 
-  constructor(@InjectRepository(Track) private readonly trackRepository: Repository<Track>) { }
+  constructor(
+    @InjectRepository(Track) private readonly trackRepository: Repository<Track>,
+    @InjectRepository(TracksFavs) private readonly tracksFavsRepository: Repository<TracksFavs>) { }
 
   async getAll() {
     const tracks = await this.trackRepository.find();
@@ -41,6 +44,14 @@ export class TrackService {
   }
 
   async delete(id: string) {
+    const favoriteTrack = await this.tracksFavsRepository.find({
+      where: { trackId: id }
+    })
+
+    if (favoriteTrack) {
+      await this.tracksFavsRepository.delete({ trackId: id });
+    }
+
     const deletedTrack = await this.trackRepository.delete(id);
     if (!deletedTrack.affected) throw new Error('The track with this id was not found');
   }

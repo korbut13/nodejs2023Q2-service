@@ -13,10 +13,7 @@ import {
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
-import { ArtistIdDto } from './dto/artist-id.dto';
-import { TrackService } from '../track/track.service';
-import { AlbumService } from '../album/album.service';
-import { FavsService } from '../favs/favs.service';
+import { IdDto } from '../utils/id.dto';
 
 @Controller('artist')
 export class ArtistController {
@@ -30,7 +27,7 @@ export class ArtistController {
   }
 
   @Get(':id')
-  async getById(@Param(ValidationPipe) artistId: ArtistIdDto) {
+  async getById(@Param(ValidationPipe) artistId: IdDto) {
     try {
       return await this.artistService.getById(artistId.id);
     } catch (error) {
@@ -51,7 +48,7 @@ export class ArtistController {
 
   @Delete(':id')
   @HttpCode(204)
-  async delete(@Param(ValidationPipe) artistId: ArtistIdDto) {
+  async delete(@Param(ValidationPipe) artistId: IdDto) {
     try {
       await this.artistService.delete(artistId.id);
 
@@ -69,7 +66,7 @@ export class ArtistController {
   @Put(':id')
   async update(
     @Body(ValidationPipe) updateArtistDto: CreateArtistDto,
-    @Param(ValidationPipe) artistId: ArtistIdDto,
+    @Param(ValidationPipe) artistId: IdDto,
   ) {
     try {
       return await this.artistService.update(artistId.id, updateArtistDto);

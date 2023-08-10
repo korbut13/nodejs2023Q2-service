@@ -12,16 +12,13 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
-import { TrackIdDto } from './dto/track-id.dto';
+import { IdDto } from '../utils/id.dto';
 import { CreateTrackDto } from './dto/create-track.dto';
-import { dataBase } from '../dataBase';
-import { FavsService } from '../favs/favs.service';
 
 @Controller('track')
 export class TrackController {
   constructor(
     private readonly trackService: TrackService,
-    private readonly favsService: FavsService,
   ) { }
   @Get()
   async getAll() {
@@ -29,7 +26,7 @@ export class TrackController {
   }
 
   @Get(':id')
-  async getById(@Param(ValidationPipe) { id }: TrackIdDto) {
+  async getById(@Param(ValidationPipe) { id }: IdDto) {
     try {
       return await this.trackService.getById(id);
     } catch (error) {
@@ -50,14 +47,9 @@ export class TrackController {
 
   @Delete(':id')
   @HttpCode(204)
-  async delete(@Param(ValidationPipe) { id }: TrackIdDto) {
+  async delete(@Param(ValidationPipe) { id }: IdDto) {
     try {
       await this.trackService.delete(id);
-      const favoriteTrack = dataBase.favs.tracks.find((track) => track === id);
-
-      if (favoriteTrack) {
-        await this.favsService.deleteTrack(favoriteTrack);
-      }
     } catch (error) {
       throw new HttpException(
         {
@@ -72,7 +64,7 @@ export class TrackController {
   @Put(':id')
   async update(
     @Body(ValidationPipe) updateTrackDto: CreateTrackDto,
-    @Param(ValidationPipe) { id }: TrackIdDto,
+    @Param(ValidationPipe) { id }: IdDto,
   ) {
     try {
       return await this.trackService.update(id, updateTrackDto);

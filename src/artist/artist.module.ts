@@ -10,9 +10,14 @@ import { Artist } from './artist.entity';
 import { Track } from '../track/track.entity';
 import { Album } from '../album/album.entity';
 
+import { ArtistsFavs } from '../favs/artists-to-favs.entity';
+import { AlbumsFavs } from '../favs/albums-to-favs.entity';
+import { TracksFavs } from '../favs/tracks-to-favs.entity';
+import { FavsModule } from '../favs/favs.module';
+
 @Module({
   providers: [ArtistService, TrackService, AlbumService, FavsService],
   controllers: [ArtistController],
-  imports: [TypeOrmModule.forFeature([Artist, Track, Album]),]
+  imports: [TypeOrmModule.forFeature([Artist, Track, Album, ArtistsFavs, AlbumsFavs, TracksFavs])]
 })
 export class ArtistModule { }
