@@ -1,20 +1,26 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Artist } from "../artist/artist.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Artist } from '../artist/artist.entity';
 
 @Entity('albums')
 export class Album {
-  @PrimaryGeneratedColumn("uuid")
-  id: string
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ type: 'varchar' })
-  name: string
+  name: string;
 
   @Column({ type: 'integer' })
-  year: number
+  year: number;
 
-  @ManyToOne(() => Artist, artist => artist.id)
+  @ManyToOne(() => Artist, (artist) => artist.id)
   @JoinColumn({ name: 'artistId' })
-  artist: Artist
+  artist: Artist;
 
   @Column({ type: 'varchar', nullable: true })
   artistId: string | null;

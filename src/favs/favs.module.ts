@@ -15,6 +15,15 @@ import { ArtistService } from '../artist/artist.service';
 @Module({
   providers: [FavsService, TrackService, AlbumService, ArtistService],
   controllers: [FavsController],
-  imports: [TypeOrmModule.forFeature([ArtistsFavs, AlbumsFavs, TracksFavs, Artist, Track, Album])]
+  imports: [
+    TypeOrmModule.forFeature([
+      ArtistsFavs,
+      AlbumsFavs,
+      TracksFavs,
+      Artist,
+      Track,
+      Album,
+    ]),
+  ],
 })
-export class FavsModule { }
+export class FavsModule {}

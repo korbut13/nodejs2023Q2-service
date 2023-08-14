@@ -14,9 +14,13 @@ export class FavsService {
     private readonly trackService: TrackService,
     private readonly artistService: ArtistService,
     private readonly albumService: AlbumService,
-    @InjectRepository(ArtistsFavs) private readonly artistsFavsRepository: Repository<ArtistsFavs>,
-    @InjectRepository(AlbumsFavs) private readonly albumsFavsRepository: Repository<AlbumsFavs>,
-    @InjectRepository(TracksFavs) private readonly tracksFavsRepository: Repository<TracksFavs>) { }
+    @InjectRepository(ArtistsFavs)
+    private readonly artistsFavsRepository: Repository<ArtistsFavs>,
+    @InjectRepository(AlbumsFavs)
+    private readonly albumsFavsRepository: Repository<AlbumsFavs>,
+    @InjectRepository(TracksFavs)
+    private readonly tracksFavsRepository: Repository<TracksFavs>,
+  ) {}
 
   async getAll() {
     const response = {
@@ -26,19 +30,19 @@ export class FavsService {
     };
 
     const favsArtists = await this.artistsFavsRepository.find();
-    for (let favArtist of favsArtists) {
+    for (const favArtist of favsArtists) {
       const artist = await this.artistService.getById(favArtist.artistId);
       response.artists.push(artist);
     }
 
     const favsAlbums = await this.albumsFavsRepository.find();
-    for (let favAlbum of favsAlbums) {
+    for (const favAlbum of favsAlbums) {
       const album = await this.albumService.getById(favAlbum.albumId);
       response.albums.push(album);
     }
 
     const favsTracks = await this.tracksFavsRepository.find();
-    for (let favTrack of favsTracks) {
+    for (const favTrack of favsTracks) {
       const track = await this.trackService.getById(favTrack.trackId);
       response.tracks.push(track);
     }
@@ -49,7 +53,7 @@ export class FavsService {
   async addTrackToFavs(id: string) {
     try {
       const track = await this.trackService.getById(id);
-      const trackToFavs = this.tracksFavsRepository.create({ trackId: id })
+      const trackToFavs = this.tracksFavsRepository.create({ trackId: id });
       await this.tracksFavsRepository.save(trackToFavs);
       return track;
     } catch (error) {
@@ -60,7 +64,7 @@ export class FavsService {
   async addAlbumToFavs(id: string) {
     try {
       const album = await this.albumService.getById(id);
-      const albumToFavs = this.albumsFavsRepository.create({ albumId: id })
+      const albumToFavs = this.albumsFavsRepository.create({ albumId: id });
       await this.albumsFavsRepository.save(albumToFavs);
       return album;
     } catch (error) {
@@ -80,17 +84,26 @@ export class FavsService {
   }
 
   async deleteTrack(id: string) {
-    const deletedTrack = await this.tracksFavsRepository.delete({ trackId: id })
-    if (!deletedTrack.affected) throw new Error('The track with this id was not found');
+    const deletedTrack = await this.tracksFavsRepository.delete({
+      trackId: id,
+    });
+    if (!deletedTrack.affected)
+      throw new Error('The track with this id was not found');
   }
 
   async deleteAlbum(id: string) {
-    const deletedAlbun = await this.albumsFavsRepository.delete({ albumId: id })
-    if (!deletedAlbun.affected) throw new Error('The album with this id was not found');
+    const deletedAlbun = await this.albumsFavsRepository.delete({
+      albumId: id,
+    });
+    if (!deletedAlbun.affected)
+      throw new Error('The album with this id was not found');
   }
 
   async deleteArtist(id: string) {
-    const deletedArtist = await this.artistsFavsRepository.delete({ artistId: id });
-    if (!deletedArtist.affected) throw new Error('The artist with this id was not found');
+    const deletedArtist = await this.artistsFavsRepository.delete({
+      artistId: id,
+    });
+    if (!deletedArtist.affected)
+      throw new Error('The artist with this id was not found');
   }
 }

@@ -1,15 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn, VersionColumn, } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, VersionColumn } from 'typeorm';
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn("uuid")
-  id: string
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ name: 'login', type: 'varchar' })
-  login: string
+  login: string;
 
   @Column({ name: 'password', type: 'varchar' })
-  password: string
+  password: string;
 
   @VersionColumn()
   version: number;
@@ -19,5 +19,4 @@ export class User {
 
   @Column('bigint')
   updatedAt: number;
-
 }

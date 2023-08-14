@@ -9,7 +9,6 @@ services:
       - ${PORT}:${PORT}
     volumes:
       - .:/app
-    tty: true
     networks:
       - my-network # Подключаем контейнер к пользовательской сети
     depends_on:

@@ -17,9 +17,7 @@ import { IdDto } from '../utils/id.dto';
 
 @Controller('artist')
 export class ArtistController {
-  constructor(
-    private readonly artistService: ArtistService
-  ) { }
+  constructor(private readonly artistService: ArtistService) {}
 
   @Get()
   async getAll() {
@@ -51,7 +49,6 @@ export class ArtistController {
   async delete(@Param(ValidationPipe) artistId: IdDto) {
     try {
       await this.artistService.delete(artistId.id);
-
     } catch (error) {
       throw new HttpException(
         {

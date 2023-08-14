@@ -18,7 +18,7 @@ import { IdDto } from '../utils/id.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
   @Get()
   async getAll() {
     return await this.userService.getAll();
@@ -27,7 +27,7 @@ export class UserController {
   @Get(':id')
   async getById(@Param(ValidationPipe) { id }: IdDto) {
     try {
-      return await this.userService.getById(id)
+      return await this.userService.getById(id);
     } catch (error) {
       throw new HttpException(
         {

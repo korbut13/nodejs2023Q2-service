@@ -1,29 +1,35 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Artist } from "../artist/artist.entity";
-import { Album } from "../album/album.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Artist } from '../artist/artist.entity';
+import { Album } from '../album/album.entity';
 
 @Entity('tracks')
 export class Track {
-  @PrimaryGeneratedColumn("uuid")
-  id: string
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ type: 'varchar' })
-  name: string
+  name: string;
 
-  @ManyToOne(() => Artist, artist => artist.id)
+  @ManyToOne(() => Artist, (artist) => artist.id)
   @JoinColumn({ name: 'artistId' })
-  artist: Artist
+  artist: Artist;
 
   @Column({ type: 'varchar', nullable: true })
   artistId: string | null;
 
-  @ManyToOne(() => Album, album => album.id)
+  @ManyToOne(() => Album, (album) => album.id)
   @JoinColumn({ name: 'albumId' })
-  album: Album
+  album: Album;
 
   @Column({ type: 'varchar', nullable: true })
   albumId: string | null;
 
   @Column({ type: 'integer' })
-  duration: number
+  duration: number;
 }

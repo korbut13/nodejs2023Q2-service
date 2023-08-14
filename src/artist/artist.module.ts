@@ -17,6 +17,15 @@ import { TracksFavs } from '../favs/tracks-to-favs.entity';
 @Module({
   providers: [ArtistService, TrackService, AlbumService, FavsService],
   controllers: [ArtistController],
-  imports: [TypeOrmModule.forFeature([Artist, Track, Album, ArtistsFavs, AlbumsFavs, TracksFavs])]
+  imports: [
+    TypeOrmModule.forFeature([
+      Artist,
+      Track,
+      Album,
+      ArtistsFavs,
+      AlbumsFavs,
+      TracksFavs,
+    ]),
+  ],
 })
-export class ArtistModule { }
+export class ArtistModule {}

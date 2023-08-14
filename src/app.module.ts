@@ -11,9 +11,13 @@ import { databaseConfig } from './database.config';
 @Module({
   imports: [
     TypeOrmModule.forRoot(databaseConfig.options),
-    UserModule, ArtistModule, AlbumModule, TrackModule, FavsModule,
+    UserModule,
+    ArtistModule,
+    AlbumModule,
+    TrackModule,
+    FavsModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

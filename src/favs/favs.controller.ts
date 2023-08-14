@@ -14,9 +14,7 @@ import { IdDto } from '../utils/id.dto';
 
 @Controller('favs')
 export class FavsController {
-  constructor(
-    private readonly favsService: FavsService,
-  ) { }
+  constructor(private readonly favsService: FavsService) {}
 
   @Get()
   async getAll() {
@@ -24,11 +22,9 @@ export class FavsController {
   }
 
   @Post('/track/:id')
-  async tracks(
-    @Param(ValidationPipe) { id }: IdDto,
-  ) {
+  async tracks(@Param(ValidationPipe) { id }: IdDto) {
     try {
-      return await this.favsService.addTrackToFavs(id)
+      return await this.favsService.addTrackToFavs(id);
     } catch (error) {
       throw new HttpException(
         {
@@ -41,9 +37,7 @@ export class FavsController {
   }
 
   @Post('/album/:id')
-  async addAlbumToFavs(
-    @Param(ValidationPipe) { id }: IdDto,
-  ) {
+  async addAlbumToFavs(@Param(ValidationPipe) { id }: IdDto) {
     try {
       return await this.favsService.addAlbumToFavs(id);
     } catch (error) {
@@ -58,9 +52,7 @@ export class FavsController {
   }
 
   @Post('/artist/:id')
-  async addArtistToFavs(
-    @Param(ValidationPipe) { id }: IdDto,
-  ) {
+  async addArtistToFavs(@Param(ValidationPipe) { id }: IdDto) {
     try {
       return await this.favsService.addArtistToFavs(id);
     } catch (error) {
