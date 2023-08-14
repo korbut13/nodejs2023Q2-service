@@ -1,3 +1,5 @@
+# *!!! the docker-compose up command takes about three minutes, please wait (warnings appear, but not errors!)*
+
 # Home Library Service
 
 ## How to install
@@ -8,7 +10,7 @@ git clone https://github.com/korbut13/nodejs2023Q2-service.git
 ```
 ## How to install
 
-Checkout to develop branch
+Checkout to develop-2 branch
 
 ## Installing NPM modules
 
@@ -21,6 +23,17 @@ npm install
 ```
 npm run start
 ```
+
+## Running application in containers with docker
+
+- run ```docker compose build```
+- run ```docker compose up```
+- two services should be started after two previous commands the database server and the server for application
+
+## Link to docker images
+
+1. [Database](https://hub.docker.com/r/sviatlanakorbut/nodejs2023q2-service-db) to pull this image run ```docker pull sviatlanakorbut/nodejs2023q2-service-db```
+2. [Server](https://hub.docker.com/r/sviatlanakorbut/nodejs2023q2-service-main) to pull this image run ```docker pull sviatlanakorbut/nodejs2023q2-service-main```
 
 ## Testing
 
