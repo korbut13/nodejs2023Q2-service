@@ -7,7 +7,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Artist } from '../artist/artist.entity';
 import { Track } from '../track/track.entity';
 import { Album } from '../album/album.entity';
-import { Favs } from './favs.entity';
 import { ArtistsFavs } from './artists-to-favs.entity';
 import { AlbumsFavs } from './albums-to-favs.entity';
 import { TracksFavs } from './tracks-to-favs.entity';

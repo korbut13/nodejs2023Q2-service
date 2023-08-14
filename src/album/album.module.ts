@@ -6,7 +6,6 @@ import { FavsService } from '../favs/favs.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Track } from '../track/track.entity';
 import { Album } from './album.entity';
-import { Favs } from '../favs/favs.entity';
 import { ArtistsFavs } from '../favs/artists-to-favs.entity';
 import { AlbumsFavs } from '../favs/albums-to-favs.entity';
 import { TracksFavs } from '../favs/tracks-to-favs.entity';

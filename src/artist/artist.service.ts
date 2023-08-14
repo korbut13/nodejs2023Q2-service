@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { TrackService } from '../track/track.service';
 import { AlbumService } from '../album/album.service';
-import { FavsService } from '../favs/favs.service';
 import { Artist } from './artist.entity';
 import { ArtistsFavs } from '../favs/artists-to-favs.entity';
 

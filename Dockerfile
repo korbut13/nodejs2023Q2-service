@@ -1,15 +1,13 @@
-FROM node:18.17
+FROM node:18.17-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install && npm cache clean --force
 
 COPY . .
 
-COPY ./dist ./dist
-
-EXPOSE 4000
+EXPOSE ${PORT}
 
 CMD ["npm", "run", "start:dev"]

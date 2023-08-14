@@ -7,7 +7,6 @@ import { FavsService } from '../favs/favs.service';
 import { Track } from './track.entity';
 import { Artist } from '../artist/artist.entity';
 import { Album } from '../album/album.entity';
-import { Favs } from '../favs/favs.entity';
 import { ArtistsFavs } from '../favs/artists-to-favs.entity';
 import { AlbumsFavs } from '../favs/albums-to-favs.entity';
 import { TracksFavs } from '../favs/tracks-to-favs.entity';

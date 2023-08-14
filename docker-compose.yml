@@ -1,32 +1,34 @@
-version: '3.0'
+version: '3.8'
 
 services:
   main:
     container_name: main
-    image: dpage/pgadmin4
     build:
       context: .
-    volumes:
-      - .:/app
-      - /app/node_modules
     ports:
-      - '4000:4000'
-    command: npm run start:dev
+      - ${PORT}:${PORT}
+    networks:
+      - my-network # Подключаем контейнер к пользовательской сети
     depends_on:
-      - postgres
-    restart: always
-  postgres:
-    container_name: postgres
-    image: postgres:latest
+      - db # Зависимость от контейнера db (PostgreSQL)
+
+  db:
+    container_name: db
+    build:
+      context: ./db
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydatabase
-      PG_DATA: /var/lib/postgresql/data
-    ports:
-      - '5432:5432'
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - my-network # Подключаем контейнер к пользовательской сети
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    restart: always
+      - postgres-data:/var/lib/postgresql/data
+
+networks:
+  my-network:
+    # Создаем пользовательскую сеть
+    driver: bridge
+
 volumes:
-  pgdata:
+  postgres-data: # Создаем том для данных PostgreSQL

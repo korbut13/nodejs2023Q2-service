@@ -11,7 +11,6 @@ import { User } from './user/user.entity';
 import { Artist } from './artist/artist.entity';
 import { Track } from './track/track.entity';
 import { Album } from './album/album.entity';
-import { Favs } from './favs/favs.entity';
 import { ArtistsFavs } from './favs/artists-to-favs.entity';
 import { AlbumsFavs } from './favs/albums-to-favs.entity';
 import { TracksFavs } from './favs/tracks-to-favs.entity';
