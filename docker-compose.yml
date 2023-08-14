@@ -7,6 +7,8 @@ services:
       context: .
     ports:
       - ${PORT}:${PORT}
+    volumes:
+      - ./:/app
     networks:
       - my-network # Подключаем контейнер к пользовательской сети
     depends_on:
@@ -16,6 +18,8 @@ services:
     container_name: db
     build:
       context: ./db
+    ports:
+      - ${POSTGRESS_PORT}:${POSTGRESS_PORT}
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -31,4 +35,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres-data: # Создаем том для данных PostgreSQL
+  postgres-data:
