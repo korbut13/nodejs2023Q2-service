@@ -1,4 +1,4 @@
-# *!!! the docker-compose up command takes about three minutes, please wait (warnings appear, but not errors!)*
+# *!!! the docker-compose up command takes about 10 minutes, please wait (warnings appear, but not errors!)*
 
 # Home Library Service
 

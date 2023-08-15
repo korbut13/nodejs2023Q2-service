@@ -17,5 +17,6 @@ export const databaseConfig = new DataSource({
   database: process.env.POSTGRES_DB,
   entities: [User, Artist, Track, Album, ArtistsFavs, AlbumsFavs, TracksFavs],
   synchronize: true,
-  migrations: ['dist/migrations/*.{ts,js}'],
+  logging: false,
+  migrations: ['dist/migrations/*.js'],
 });
