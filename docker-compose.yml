@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  main:
+    container_name: main
+    build:
+      context: .
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - .:/app
+    networks:
+      - my-network # Подключаем контейнер к пользовательской сети
+    depends_on:
+      - db # Зависимость от контейнера db (PostgreSQL)
+
+  db:
+    container_name: db
+    build:
+      context: ./db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - my-network # Подключаем контейнер к пользовательской сети
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+networks:
+  my-network:
+    # Создаем пользовательскую сеть
+    driver: bridge
+
+volumes:
+  postgres-data:
