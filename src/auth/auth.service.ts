@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -23,7 +23,7 @@ export class AuthService {
 
   }
 
-  async generateToken(user: User) {
+  private async generateToken(user: User) {
     const payload = { userId: user.id, login: user.login, expiration: '24h' };
     return {
       token: this.jwtService.sign(payload)
@@ -32,6 +32,17 @@ export class AuthService {
 
 
   async login(userDto: CreateUserDto) {
+    const user = await this.validateUser(userDto);
+    return this.generateToken(user);
+  }
 
+  private async validateUser(userDto: CreateUserDto) {
+    const user = await this.userService.getUserByLogin(userDto.login);
+    const passwordEquals = await bcrypt.compare(userDto.password, user.password);
+    if (user && passwordEquals) {
+      return user;
+    } else {
+      throw new HttpException("no user with such login, password doesn't match actual one, etc", HttpStatus.FORBIDDEN)
+    }
   }
 }
