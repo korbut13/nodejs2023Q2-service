@@ -9,7 +9,7 @@ import { User } from './user.entity';
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
   async getAll() {
     const users = await this.userRepository.find({
       select: ['id', 'login', 'version', 'createdAt', 'updatedAt'],
@@ -63,5 +63,10 @@ export class UserService {
     };
     await this.userRepository.update(id, updatedFields);
     return await this.getById(id);
+  }
+
+  async getUserByLogin(login: string) {
+    const user = await this.userRepository.findOneBy({ login: login });
+    return user;
   }
 }

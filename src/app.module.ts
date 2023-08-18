@@ -7,6 +7,7 @@ import { FavsModule } from './favs/favs.module';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './database.config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { databaseConfig } from './database.config';
     AlbumModule,
     TrackModule,
     FavsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
