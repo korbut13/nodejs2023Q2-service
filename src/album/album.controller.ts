@@ -10,20 +10,24 @@ import {
   HttpStatus,
   HttpCode,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { IdDto } from '../utils/id.dto';
 import { CreateAlbumDto } from './dto/create-album.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('album')
 export class AlbumController {
-  constructor(private readonly albumService: AlbumService) {}
+  constructor(private readonly albumService: AlbumService) { }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAll() {
     return this.albumService.getAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getById(@Param(ValidationPipe) { id }: IdDto) {
     try {
@@ -39,11 +43,13 @@ export class AlbumController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body(ValidationPipe) createAlbumDto: CreateAlbumDto) {
     return await this.albumService.create(createAlbumDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async delete(@Param(ValidationPipe) { id }: IdDto) {
@@ -60,6 +66,7 @@ export class AlbumController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
     @Body(ValidationPipe) updateAlbumDto: CreateAlbumDto,

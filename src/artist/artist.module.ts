@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ArtistService } from './artist.service';
@@ -13,6 +13,7 @@ import { Album } from '../album/album.entity';
 import { ArtistsFavs } from '../favs/artists-to-favs.entity';
 import { AlbumsFavs } from '../favs/albums-to-favs.entity';
 import { TracksFavs } from '../favs/tracks-to-favs.entity';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   providers: [ArtistService, TrackService, AlbumService, FavsService],
@@ -26,6 +27,7 @@ import { TracksFavs } from '../favs/tracks-to-favs.entity';
       AlbumsFavs,
       TracksFavs,
     ]),
+    forwardRef(() => AuthModule)
   ],
 })
-export class ArtistModule {}
+export class ArtistModule { }

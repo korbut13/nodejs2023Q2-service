@@ -8,19 +8,23 @@ import {
   HttpStatus,
   HttpCode,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
 import { IdDto } from '../utils/id.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('favs')
 export class FavsController {
-  constructor(private readonly favsService: FavsService) {}
+  constructor(private readonly favsService: FavsService) { }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAll() {
     return await this.favsService.getAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/track/:id')
   async tracks(@Param(ValidationPipe) { id }: IdDto) {
     try {
@@ -36,6 +40,7 @@ export class FavsController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/album/:id')
   async addAlbumToFavs(@Param(ValidationPipe) { id }: IdDto) {
     try {
@@ -51,6 +56,7 @@ export class FavsController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/artist/:id')
   async addArtistToFavs(@Param(ValidationPipe) { id }: IdDto) {
     try {
@@ -66,6 +72,7 @@ export class FavsController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('/track/:id')
   @HttpCode(204)
   async deleteTrack(@Param(ValidationPipe) { id }: IdDto) {
@@ -82,6 +89,7 @@ export class FavsController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('/album/:id')
   @HttpCode(204)
   async deleteAlbum(@Param(ValidationPipe) { id }: IdDto) {
@@ -97,6 +105,8 @@ export class FavsController {
       );
     }
   }
+
+  @UseGuards(JwtAuthGuard)
   @Delete('/artist/:id')
   @HttpCode(204)
   async deleteArtist(@Param(ValidationPipe) { id }: IdDto) {

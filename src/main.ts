@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import 'dotenv/config';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 const port = process.env.PORT;
 
