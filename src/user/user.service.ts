@@ -7,6 +7,7 @@ import { User } from './user.entity';
 import { AuthService } from '../auth/auth.service';
 import { Token } from '../auth/token.entity';
 import * as bcrypt from 'bcrypt'
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -25,6 +26,7 @@ export class UserService {
   async getById(id: string) {
     const foundUser = await this.userRepository.findOneBy({ id: id });
     if (!foundUser) throw new Error('The user with this id was not found');
+
     const response = {
       ...foundUser,
       createdAt: Number(foundUser.createdAt),
@@ -34,11 +36,12 @@ export class UserService {
     return response;
   }
 
+  async getUserByLogin(user: CreateUserDto) {
+    const u = await this.userRepository.findOneBy({ login: user.login });
+    return u;
+  }
+
   async create(userDto: CreateUserDto) {
-    const candidate = await this.getUserByLogin(userDto.login);
-    if (candidate) {
-      throw new HttpException('A user with this login already exists', HttpStatus.BAD_REQUEST);
-    }
     const date = Number(Date.now());
     const hashPassword = await bcrypt.hash(userDto.password, 5);
 
@@ -56,54 +59,33 @@ export class UserService {
 
   async delete(id: string) {
     const tokenUser = await this.tokenRepository.findOneBy({ userId: id });
-    //await this.tokenRepository.update(tokenUser.id, { ...tokenUser, userId: null })
-    const deletedToken = await this.tokenRepository.delete(tokenUser.id);
-    if (!deletedToken.affected) {
-      throw new Error('The user with this id was not found')
+
+    if (tokenUser) {
+      const deletedToken = await this.tokenRepository.delete(tokenUser.id);
     }
     const deletedUser = await this.userRepository.delete(id)
-
     if (!deletedUser.affected)
-      throw new Error('The user with this id was not found')
+      throw new Error('The user with this id was not found');
   }
 
-  // async update(id: string, updateUserDto: UpdatePasswordDto, refreshToken: string) {
-  //   const userForUpdate = await this.userRepository.findOneBy({ id: id });
-  //   if (!userForUpdate) throw new Error('The user with this id was not found');
-  //   if (userForUpdate.password !== updateUserDto.oldPassword)
-  //     throw new Error('OldPassword is wrong')
+  async update(id: string, updateUserDto: UpdatePasswordDto) {
+    const userForUpdate = await this.userRepository.findOneBy({ id: id });
 
-  //   const date = Date.now();
-  //   const updatedFields = {
-  //     password: updateUserDto.newPassword,
-  //     updatedAt: date,
-  //   };
-  //   await this.userRepository.update(id, updatedFields);
-  //   // return await this.getById(id);
-  //   return await this.getById(id, refreshToken);
-  // }
+    if (!userForUpdate) throw new Error('The user with this id was not found')
 
-  async update(id: string, updateUserDto: UpdatePasswordDto, refreshToken: string) {
-    const userForUpdate = await this.getById(id);
-    if (!userForUpdate) {
-      return null
+    const passwordEquals = await bcrypt.compare(updateUserDto.oldPassword, userForUpdate.password);
+
+    if (!passwordEquals) {
+      throw new Error('OldPassword is wrong');
     }
-    if (userForUpdate === undefined) throw new Error('The user with this id was not found');
-    if (userForUpdate.password !== updateUserDto.oldPassword)
-      throw new Error('OldPassword is wrong')
 
+    const newPassportHash = await bcrypt.hash(updateUserDto.newPassword, 5);
     const date = Date.now();
     const updatedFields = {
-      password: updateUserDto.newPassword,
+      password: newPassportHash,
       updatedAt: date,
     };
     await this.userRepository.update(id, updatedFields);
-    // return await this.getById(id);
-    return await this.getById(id);
-  }
-
-  async getUserByLogin(login: string) {
-    const user = await this.userRepository.findOneBy({ login: login });
-    return user;
+    return await this.getById(id)
   }
 }

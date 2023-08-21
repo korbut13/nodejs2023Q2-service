@@ -16,9 +16,9 @@ export class Token {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'varchar' })
   userId: string;
 
   @Column({ type: 'varchar' })
-  refreshToken: string | null;
+  refreshToken: string;
 }

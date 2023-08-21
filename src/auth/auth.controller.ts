@@ -11,20 +11,28 @@ export class AuthController {
 
   @Post('/signup')
   async signup(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res: Response) {
-    const data = await this.authService.signup(userDto);
+    try {
+      const data = await this.authService.signup(userDto)
 
-    res.cookie('accessToken', data.accessToken, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true });
-    res.cookie('refreshToken', data.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
-    return data.user;
+      res.cookie('accessToken', data.accessToken, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true });
+      res.cookie('refreshToken', data.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
+      return data.user;
+    } catch (error) {
+      console.log("SignupErorController", error)
+    }
 
   }
 
   @Post('/login')
   async login(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res: Response) {
-    const tokenData = await this.authService.login(userDto);
-    res.cookie('accessToken', tokenData.accessToken, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true });
-    res.cookie('refreshToken', tokenData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
-    return tokenData;
+    try {
+      const tokenData = await this.authService.login(userDto);
+      res.cookie('accessToken', tokenData.accessToken, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true });
+      res.cookie('refreshToken', tokenData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+      return tokenData;
+    } catch (error) {
+      console.log("Loginerror", error)
+    }
   }
 
   @Post('/refresh')
@@ -36,9 +44,8 @@ export class AuthController {
       res.cookie('refreshToken', tokenData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
       return tokenData;
     } catch (error) {
-
+      console.log("refreshError", error)
     }
-
   }
 
 }

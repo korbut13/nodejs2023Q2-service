@@ -12,7 +12,6 @@ import {
   HttpCode,
   UseGuards,
   Req,
-  Header,
   Res
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -56,10 +55,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    const newUser = await this.userService.create(createUserDto);
-    const tokenData = await this.authService.generateToken(newUser);
-    this.authService.saveToken(newUser.id, tokenData.refreshToken);
-    return newUser
+    return await this.userService.create(createUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -84,18 +80,9 @@ export class UserController {
   async update(
     @Body(ValidationPipe) updateUserDto: UpdatePasswordDto,
     @Param(ValidationPipe) { id }: IdDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
   ) {
     try {
-      const tokens: { refreshToken: string } = req.cookies;
-      const refreshToken = tokens.refreshToken
-      const response = await this.userService.update(id, updateUserDto, refreshToken);
-      if (!response) {
-        res.status(204);
-      } else {
-        return response
-      }
+      return await this.userService.update(id, updateUserDto);
     } catch (error) {
       if (error.message === 'The user with this id was not found') {
         throw new HttpException(
@@ -104,7 +91,7 @@ export class UserController {
             error: 'The user with this id was not found',
           },
           HttpStatus.NOT_FOUND,
-        );
+        )
       } else if (error.message === 'OldPassword is wrong')
         throw new HttpException(
           {

@@ -7,7 +7,6 @@ import { User } from '../user/user.entity';
 import { Token } from './token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Jwt } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
@@ -20,19 +19,16 @@ export class AuthService {
   ) { }
 
   async signup(userDto: CreateUserDto) {
-    const newUser = await this.userService.create(userDto);
-    // const candidate = await this.userService.getUserByLogin(userDto.login);
-    // if (candidate) {
-    //   throw new HttpException('A user with this login already exists', HttpStatus.BAD_REQUEST);
-    // }
-    // const hashPassword = await bcrypt.hash(userDto.password, 5);
-    // const newUser = await this.userService.create({ ...userDto, password: hashPassword });
-
-    const tokenData = await this.generateToken(newUser);
-    this.saveToken(newUser.id, tokenData.refreshToken);
-    return {
-      user: newUser,
-      ...tokenData
+    try {
+      const newUser = await this.userService.create(userDto);
+      const tokenData = await this.generateToken(newUser);
+      this.saveToken(newUser.id, tokenData.refreshToken);
+      return {
+        user: newUser,
+        ...tokenData
+      }
+    } catch (error) {
+      console.log("SignupServiceError", error)
     }
   }
 
@@ -63,9 +59,8 @@ export class AuthService {
   }
 
   private async validateUser(userDto: CreateUserDto) {
-    console.log(2222)
-    const user = await this.userService.getUserByLogin(userDto.login);
-    console.log(111, userDto.password, user.password)
+    const user = await this.userService.getUserByLogin(userDto)
+
     const passwordEquals = await bcrypt.compare(userDto.password, user.password);
     if (user && passwordEquals) {
       return user
@@ -75,12 +70,17 @@ export class AuthService {
   }
 
   async login(userDto: CreateUserDto) {
-    const user = await this.validateUser(userDto);
-    const tokenData = await this.generateToken(user);
-    this.saveToken(user.id, tokenData.refreshToken);
-    return {
-      ...tokenData
+    try {
+      const user = await this.validateUser(userDto);
+      const tokenData = await this.generateToken(user);
+      this.saveToken(user.id, tokenData.refreshToken);
+      return {
+        ...tokenData
+      }
+    } catch (error) {
+      console.log("loginServerError", error)
     }
+
   }
 
 
@@ -88,13 +88,10 @@ export class AuthService {
     if (!refreshToken) {
       throw new HttpException("рефреш токен не пришел", HttpStatus.UNAUTHORIZED)
     }
-
     const refreshTokenInDataBase = await this.tokenRepository.findOneBy({ refreshToken: refreshToken.refreshToken });
     if (!refreshTokenInDataBase) {
       throw new HttpException("такого токена нет", HttpStatus.FORBIDDEN);
     }
-
-    // const user = await this.userService.getById(refreshTokenInDataBase.userId);
     const user = await this.userService.getById(refreshTokenInDataBase.userId);
     const tokenData = await this.generateToken(user);
     this.saveToken(user.id, tokenData.refreshToken);
