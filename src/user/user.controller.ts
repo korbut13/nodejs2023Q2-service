@@ -36,14 +36,8 @@ export class UserController {
   @Get(':id')
   async getById(@Param(ValidationPipe) { id }: IdDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
-      const tokens: { refreshToken: string } = req.cookies;
-      const refreshToken = tokens.refreshToken
-      const resp = await this.userService.getById(id, refreshToken);
-      if (!resp) {
-        res.status(204);
-      } else {
-        return resp;
-      }
+      return await this.userService.getById(id);
+
     } catch (error) {
       throw new HttpException(
         {
@@ -74,7 +68,7 @@ export class UserController {
           error: 'The user with this id was not found',
         },
         HttpStatus.NOT_FOUND,
-      );
+      )
     }
   }
 

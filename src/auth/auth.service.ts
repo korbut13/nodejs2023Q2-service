@@ -93,7 +93,7 @@ export class AuthService {
     }
 
     // const user = await this.userService.getById(refreshTokenInDataBase.userId);
-    const user = await this.userService.getById(refreshTokenInDataBase.userId, refreshTokenInDataBase.refreshToken);
+    const user = await this.userService.getById(refreshTokenInDataBase.userId);
     const tokenData = await this.generateToken(user);
     this.saveToken(user.id, tokenData.refreshToken);
     return {

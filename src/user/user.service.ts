@@ -22,24 +22,16 @@ export class UserService {
     return users;
   }
 
-  async getById(id: string, refreshToken: string) {
-    const tokenInDb = await this.tokenRepository.findOneBy({ refreshToken: refreshToken });
-
-    console.log(1, tokenInDb)
-    if (tokenInDb && !tokenInDb.userId) {
-      return null;
-    } else {
-      const foundUser = await this.userRepository.findOneBy({ id: id });
-      if (!foundUser) throw new Error('The user with this id was not found');
-      const response = {
-        ...foundUser,
-        createdAt: Number(foundUser.createdAt),
-        updatedAt: Number(foundUser.updatedAt),
-      };
-      delete response.password;
-      return response;
-    }
-
+  async getById(id: string) {
+    const foundUser = await this.userRepository.findOneBy({ id: id });
+    if (!foundUser) throw new Error('The user with this id was not found');
+    const response = {
+      ...foundUser,
+      createdAt: Number(foundUser.createdAt),
+      updatedAt: Number(foundUser.updatedAt),
+    };
+    delete response.password;
+    return response;
   }
 
   async create(userDto: CreateUserDto) {
@@ -59,8 +51,11 @@ export class UserService {
 
   async delete(id: string) {
     const tokenUser = await this.tokenRepository.findOneBy({ userId: id });
-    //await this.tokenRepository.delete(tokenUser.id);
-    await this.tokenRepository.update(tokenUser.id, { ...tokenUser, userId: null })
+    //await this.tokenRepository.update(tokenUser.id, { ...tokenUser, userId: null })
+    const deletedToken = await this.tokenRepository.delete(tokenUser.id);
+    if (!deletedToken.affected) {
+      throw new Error('The user with this id was not found')
+    }
     const deletedUser = await this.userRepository.delete(id)
 
     if (!deletedUser.affected)
@@ -84,7 +79,7 @@ export class UserService {
   // }
 
   async update(id: string, updateUserDto: UpdatePasswordDto, refreshToken: string) {
-    const userForUpdate = await this.getById(id, refreshToken);
+    const userForUpdate = await this.getById(id);
     if (!userForUpdate) {
       return null
     }
@@ -99,7 +94,7 @@ export class UserService {
     };
     await this.userRepository.update(id, updatedFields);
     // return await this.getById(id);
-    return await this.getById(id, refreshToken);
+    return await this.getById(id);
   }
 
   async getUserByLogin(login: string) {
