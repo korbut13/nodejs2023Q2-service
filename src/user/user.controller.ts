@@ -21,11 +21,15 @@ import { UserService } from './user.service';
 import { IdDto } from '../utils/id.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request, Response } from 'express';
+import { AuthService } from '../auth/auth.service';
 
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(
+    private userService: UserService,
+    private authService: AuthService
+  ) { }
   @UseGuards(JwtAuthGuard)
   @Get()
   async getAll() {
@@ -52,7 +56,10 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    return await this.userService.create(createUserDto)
+    const newUser = await this.userService.create(createUserDto);
+    const tokenData = await this.authService.generateToken(newUser);
+    this.authService.saveToken(newUser.id, tokenData.refreshToken);
+    return newUser
   }
 
   @UseGuards(JwtAuthGuard)

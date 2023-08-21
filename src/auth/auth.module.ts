@@ -5,6 +5,7 @@ import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Token } from './token.entity';
+import { UserService } from '../user/user.service';
 
 @Module({
   controllers: [AuthController],

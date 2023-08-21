@@ -9,8 +9,8 @@ import { AuthService } from '../auth/auth.service';
 import { Token } from '../auth/token.entity';
 
 @Module({
-  providers: [UserService],
   controllers: [UserController],
+  providers: [UserService],
   imports: [
     TypeOrmModule.forFeature([User, Token]),
     forwardRef(() => AuthModule)

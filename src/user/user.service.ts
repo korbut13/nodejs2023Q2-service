@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -6,6 +6,7 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './user.entity';
 import { AuthService } from '../auth/auth.service';
 import { Token } from '../auth/token.entity';
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService {
@@ -13,7 +14,6 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Token)
     private readonly tokenRepository: Repository<Token>,
-
   ) { }
   async getAll() {
     const users = await this.userRepository.find({
@@ -35,14 +35,19 @@ export class UserService {
   }
 
   async create(userDto: CreateUserDto) {
+    const candidate = await this.getUserByLogin(userDto.login);
+    if (candidate) {
+      throw new HttpException('A user with this login already exists', HttpStatus.BAD_REQUEST);
+    }
     const date = Number(Date.now());
+    const hashPassword = await bcrypt.hash(userDto.password, 5);
 
     const dataNewUser = {
       ...userDto,
+      password: hashPassword,
       createdAt: date,
       updatedAt: date,
     };
-
     const newUser = this.userRepository.create(dataNewUser);
     await this.userRepository.save(newUser);
     delete newUser.password;

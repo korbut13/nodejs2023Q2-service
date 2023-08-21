@@ -20,12 +20,14 @@ export class AuthService {
   ) { }
 
   async signup(userDto: CreateUserDto) {
-    const candidate = await this.userService.getUserByLogin(userDto.login);
-    if (candidate) {
-      throw new HttpException('A user with this login already exists', HttpStatus.BAD_REQUEST);
-    }
-    const hashPassword = await bcrypt.hash(userDto.password, 5);
-    const newUser = await this.userService.create({ ...userDto, password: hashPassword });
+    const newUser = await this.userService.create(userDto);
+    // const candidate = await this.userService.getUserByLogin(userDto.login);
+    // if (candidate) {
+    //   throw new HttpException('A user with this login already exists', HttpStatus.BAD_REQUEST);
+    // }
+    // const hashPassword = await bcrypt.hash(userDto.password, 5);
+    // const newUser = await this.userService.create({ ...userDto, password: hashPassword });
+
     const tokenData = await this.generateToken(newUser);
     this.saveToken(newUser.id, tokenData.refreshToken);
     return {
@@ -34,7 +36,7 @@ export class AuthService {
     }
   }
 
-  private async generateToken(user: User) {
+  async generateToken(user: User) {
     const payload = { userId: user.id, login: user.login, expiration: '30m' };
     return {
       accessToken: this.jwtService.sign(payload, { expiresIn: '30m' }),
