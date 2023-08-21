@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { User } from './user.entity';
 import { AuthModule } from '../auth/auth.module';
-import { AuthService } from '../auth/auth.service';
 import { Token } from '../auth/token.entity';
 
 @Module({
@@ -13,8 +12,8 @@ import { Token } from '../auth/token.entity';
   providers: [UserService],
   imports: [
     TypeOrmModule.forFeature([User, Token]),
-    forwardRef(() => AuthModule)
+    forwardRef(() => AuthModule),
   ],
-  exports: [UserService]
+  exports: [UserService],
 })
-export class UserModule { }
+export class UserModule {}

@@ -26,7 +26,7 @@ import { AuthModule } from '../auth/auth.module';
       AlbumsFavs,
       TracksFavs,
     ]),
-    forwardRef(() => AuthModule)
+    forwardRef(() => AuthModule),
   ],
 })
-export class TrackModule { }
+export class TrackModule {}

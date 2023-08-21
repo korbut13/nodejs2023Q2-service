@@ -11,24 +11,16 @@ import {
   ValidationPipe,
   HttpCode,
   UseGuards,
-  Req,
-  Res
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserService } from './user.service';
 import { IdDto } from '../utils/id.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Request, Response } from 'express';
-import { AuthService } from '../auth/auth.service';
-
 
 @Controller('user')
 export class UserController {
-  constructor(
-    private userService: UserService,
-    private authService: AuthService
-  ) { }
+  constructor(private userService: UserService) {}
   @UseGuards(JwtAuthGuard)
   @Get()
   async getAll() {
@@ -37,10 +29,9 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getById(@Param(ValidationPipe) { id }: IdDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async getById(@Param(ValidationPipe) { id }: IdDto) {
     try {
       return await this.userService.getById(id);
-
     } catch (error) {
       throw new HttpException(
         {
@@ -63,7 +54,7 @@ export class UserController {
   @HttpCode(204)
   async delete(@Param(ValidationPipe) { id }: IdDto) {
     try {
-      await this.userService.delete(id)
+      await this.userService.delete(id);
     } catch (error) {
       throw new HttpException(
         {
@@ -71,7 +62,7 @@ export class UserController {
           error: 'The user with this id was not found',
         },
         HttpStatus.NOT_FOUND,
-      )
+      );
     }
   }
 
@@ -91,7 +82,7 @@ export class UserController {
             error: 'The user with this id was not found',
           },
           HttpStatus.NOT_FOUND,
-        )
+        );
       } else if (error.message === 'OldPassword is wrong')
         throw new HttpException(
           {
@@ -99,7 +90,7 @@ export class UserController {
             error: 'OldPassword is wrong',
           },
           HttpStatus.FORBIDDEN,
-        )
+        );
     }
   }
 }

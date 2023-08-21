@@ -16,7 +16,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('favs')
 export class FavsController {
-  constructor(private readonly favsService: FavsService) { }
+  constructor(private readonly favsService: FavsService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get()

@@ -5,7 +5,6 @@ import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Token } from './token.entity';
-import { UserService } from '../user/user.service';
 
 @Module({
   controllers: [AuthController],
@@ -16,13 +15,10 @@ import { UserService } from '../user/user.service';
     JwtModule.register({
       secret: process.env.JWT_ACCESS_TOKEN || 'SECRET',
       signOptions: {
-        expiresIn: '30m'
-      }
-    })
+        expiresIn: '30m',
+      },
+    }),
   ],
-  exports: [
-    AuthService,
-    JwtModule
-  ]
+  exports: [AuthService, JwtModule],
 })
-export class AuthModule { };
+export class AuthModule {}

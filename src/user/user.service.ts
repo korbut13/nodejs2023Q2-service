@@ -1,13 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './user.entity';
-import { AuthService } from '../auth/auth.service';
 import { Token } from '../auth/token.entity';
-import * as bcrypt from 'bcrypt'
-import { UserDto } from './dto/user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -15,7 +13,7 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Token)
     private readonly tokenRepository: Repository<Token>,
-  ) { }
+  ) {}
   async getAll() {
     const users = await this.userRepository.find({
       select: ['id', 'login', 'version', 'createdAt', 'updatedAt'],
@@ -61,9 +59,9 @@ export class UserService {
     const tokenUser = await this.tokenRepository.findOneBy({ userId: id });
 
     if (tokenUser) {
-      const deletedToken = await this.tokenRepository.delete(tokenUser.id);
+      await this.tokenRepository.delete(tokenUser.id);
     }
-    const deletedUser = await this.userRepository.delete(id)
+    const deletedUser = await this.userRepository.delete(id);
     if (!deletedUser.affected)
       throw new Error('The user with this id was not found');
   }
@@ -71,9 +69,12 @@ export class UserService {
   async update(id: string, updateUserDto: UpdatePasswordDto) {
     const userForUpdate = await this.userRepository.findOneBy({ id: id });
 
-    if (!userForUpdate) throw new Error('The user with this id was not found')
+    if (!userForUpdate) throw new Error('The user with this id was not found');
 
-    const passwordEquals = await bcrypt.compare(updateUserDto.oldPassword, userForUpdate.password);
+    const passwordEquals = await bcrypt.compare(
+      updateUserDto.oldPassword,
+      userForUpdate.password,
+    );
 
     if (!passwordEquals) {
       throw new Error('OldPassword is wrong');
@@ -86,6 +87,6 @@ export class UserService {
       updatedAt: date,
     };
     await this.userRepository.update(id, updatedFields);
-    return await this.getById(id)
+    return await this.getById(id);
   }
 }
