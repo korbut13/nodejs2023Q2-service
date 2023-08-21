@@ -10,18 +10,13 @@ git clone https://github.com/korbut13/nodejs2023Q2-service.git
 ```
 ## How to install
 
-Checkout to develop-2 branch
+Checkout to develop-3 branch
 
 ## Installing NPM modules
 
 ```
 npm install
-```
 
-## Running application
-
-```
-npm run start
 ```
 
 ## Running application in containers with docker
@@ -30,19 +25,13 @@ npm run start
 - run ```docker compose up```
 - two services should be started after two previous commands the database server and the server for application
 
-## Link to docker images
-
-1. [Database](https://hub.docker.com/r/sviatlanakorbut/nodejs2023q2-service-db) to pull this image run ```docker pull sviatlanakorbut/nodejs2023q2-service-db```
-2. [Server](https://hub.docker.com/r/sviatlanakorbut/nodejs2023q2-service-main) to pull this image run ```docker pull sviatlanakorbut/nodejs2023q2-service-main```
 
 ## Testing
 
 After application running open new terminal and enter:
 
-To run all tests without authorization
-
 ```
-npm run test
+npm run test:auth
 ```
 
 
@@ -57,6 +46,21 @@ npm run format
 ```
 
 ### How to use
+
+* `Signup` (`auth/signup` route)
+    * `POST auth/signup` - send `login` and `password` to create a new `user`
+      - Server should answer with `status code` **201** and corresponding message if dto is valid
+      - Server should answer with `status code` **400** and corresponding message if dto is invalid (no `login` or `password`, or they are not a `strings`)
+* `Login` (`auth/login` route)
+    * `POST auth/login` - send `login` and `password` to get Access token and Refresh token (optionally)
+      - Server should answer with `status code` **200** and tokens if dto is valid
+      - Server should answer with `status code` **400** and corresponding message if dto is invalid (no `login` or `password`, or they are not a `strings`)
+      - Server should answer with `status code` **403** and corresponding message if authentication failed (no user with such `login`, `password` doesn't match actual one, etc.)
+* `Refresh` (`auth/refresh` route)
+    * `POST auth/refresh` - send refresh token in body as `{ refreshToken }` to get new pair of Access token and Refresh token
+      - Server should answer with `status code` **200** and tokens in body if dto is valid
+      - Server should answer with `status code` **401** and corresponding message if dto is invalid (no `refreshToken` in body)
+      - Server should answer with `status code` **403** and corresponding message if authentication failed (Refresh token is invalid or expired)
 
 * `Users` (`/user` route)
     * `GET /user` - get all users
