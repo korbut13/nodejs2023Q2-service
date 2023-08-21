@@ -9,6 +9,7 @@ services:
       - ${PORT}:${PORT}
     volumes:
       - .:/app
+      - /app/node_modules
     networks:
       - my-network # Подключаем контейнер к пользовательской сети
     depends_on:

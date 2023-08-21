@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('/signup')
   async signup(
@@ -14,7 +14,6 @@ export class AuthController {
   ) {
     try {
       const data = await this.authService.signup(userDto);
-
       res.cookie('accessToken', data.accessToken, {
         maxAge: 1 * 24 * 60 * 60 * 1000,
         httpOnly: true,

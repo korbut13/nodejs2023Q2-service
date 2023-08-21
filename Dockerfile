@@ -6,8 +6,8 @@ COPY package*.json ./
 
 RUN npm install && npm cache clean --force
 
-COPY . .
+COPY . ./app
 
 EXPOSE ${PORT}
 
-CMD ["npm", "run", "start:app"]
+CMD ["npm", "run", "start:dev"]
