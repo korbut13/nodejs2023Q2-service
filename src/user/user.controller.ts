@@ -11,12 +11,17 @@ import {
   ValidationPipe,
   HttpCode,
   UseGuards,
+  Req,
+  Header,
+  Res
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserService } from './user.service';
 import { IdDto } from '../utils/id.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Request, Response } from 'express';
+
 
 @Controller('user')
 export class UserController {
@@ -29,9 +34,16 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getById(@Param(ValidationPipe) { id }: IdDto) {
+  async getById(@Param(ValidationPipe) { id }: IdDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
-      return await this.userService.getById(id);
+      const tokens: { refreshToken: string } = req.cookies;
+      const refreshToken = tokens.refreshToken
+      const resp = await this.userService.getById(id, refreshToken);
+      if (!resp) {
+        res.status(204);
+      } else {
+        return resp;
+      }
     } catch (error) {
       throw new HttpException(
         {
@@ -46,7 +58,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    return await this.userService.create(createUserDto);
+    return await this.userService.create(createUserDto)
   }
 
   @UseGuards(JwtAuthGuard)
@@ -54,7 +66,7 @@ export class UserController {
   @HttpCode(204)
   async delete(@Param(ValidationPipe) { id }: IdDto) {
     try {
-      await this.userService.delete(id);
+      await this.userService.delete(id)
     } catch (error) {
       throw new HttpException(
         {
@@ -71,9 +83,18 @@ export class UserController {
   async update(
     @Body(ValidationPipe) updateUserDto: UpdatePasswordDto,
     @Param(ValidationPipe) { id }: IdDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
   ) {
     try {
-      return await this.userService.update(id, updateUserDto);
+      const tokens: { refreshToken: string } = req.cookies;
+      const refreshToken = tokens.refreshToken
+      const response = await this.userService.update(id, updateUserDto, refreshToken);
+      if (!response) {
+        res.status(204);
+      } else {
+        return response
+      }
     } catch (error) {
       if (error.message === 'The user with this id was not found') {
         throw new HttpException(
@@ -90,7 +111,7 @@ export class UserController {
             error: 'OldPassword is wrong',
           },
           HttpStatus.FORBIDDEN,
-        );
+        )
     }
   }
 }

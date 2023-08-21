@@ -10,14 +10,18 @@ export class JwtAuthGuard implements CanActivate {
     const req = context.switchToHttp().getRequest()
     try {
       const authHeader = req.headers.authorization;
-      const bearer = authHeader.split(' ')[0];
-      const token = authHeader.split(' ')[1];
-      if (bearer !== 'Bearer' || !token) {
+      if (authHeader) {
+        const bearer = authHeader.split(' ')[0];
+        const token = authHeader.split(' ')[1];
+        if (bearer !== 'Bearer' || !token) {
+          throw new UnauthorizedException({ message: "Пользователь не авторизовался" })
+        }
+        const user = this.jwtService.verify(token);
+        req.user = user;
+        return true
+      } else {
         throw new UnauthorizedException({ message: "Пользователь не авторизовался" })
       }
-      const user = this.jwtService.verify(token);
-      req.user = user;
-      return true
     } catch (error) {
       console.log(error);
       throw new UnauthorizedException({ message: "Пользователь не авторизовался" })

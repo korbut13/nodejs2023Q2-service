@@ -7,6 +7,7 @@ import { Track } from './track/track.entity';
 import { User } from './user/user.entity';
 import { DataSource } from 'typeorm';
 import 'dotenv/config';
+import { Token } from './auth/token.entity';
 
 export const databaseConfig = new DataSource({
   type: 'postgres',
@@ -15,7 +16,7 @@ export const databaseConfig = new DataSource({
   username: process.env.POSTGRES_USER,
   password: String(process.env.POSTGRES_PASSWORD),
   database: process.env.POSTGRES_DB,
-  entities: [User, Artist, Track, Album, ArtistsFavs, AlbumsFavs, TracksFavs],
+  entities: [User, Artist, Track, Album, ArtistsFavs, AlbumsFavs, TracksFavs, Token],
   synchronize: true,
   logging: false,
   migrations: ['dist/migrations/*.js'],

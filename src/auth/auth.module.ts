@@ -3,17 +3,19 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
-
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Token } from './token.entity';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService],
   imports: [
+    TypeOrmModule.forFeature([Token]),
     forwardRef(() => UserModule),
     JwtModule.register({
-      secret: process.env.PRIVATE_KEY || 'SECRET',
+      secret: process.env.JWT_ACCESS_TOKEN || 'SECRET',
       signOptions: {
-        expiresIn: '24h'
+        expiresIn: '30m'
       }
     })
   ],
@@ -22,4 +24,4 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule
   ]
 })
-export class AuthModule { }
+export class AuthModule { };
