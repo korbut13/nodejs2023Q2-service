@@ -4,6 +4,7 @@
 
 # Logs
 logs
+errors
 *.log
 npm-debug.log*
 pnpm-debug.log*
