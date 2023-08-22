@@ -1,4 +1,4 @@
-# *!!! the docker-compose up command takes about 10 minutes, please wait (warnings appear, but not errors!)*
+# *!!! the docker-compose up command takes about 2 minutes, please wait (warnings appear, but not errors!)*
 
 # Home Library Service
 
@@ -19,7 +19,7 @@ npm install
 
 ```
 
-## Running application in containers with docker
+## Running application in containers with docker (Docker Desktop must be open)
 
 - run ```docker compose build```
 - run ```docker compose up```
